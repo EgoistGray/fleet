@@ -1,13 +1,12 @@
+import { prisma } from "@/server/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type NextAuthOptions,
   type DefaultSession,
+  type NextAuthOptions,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-import { env } from "@/env.mjs";
-import { prisma } from "@/server/db";
+import CredentialProvider from "next-auth/providers/credentials";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -36,20 +35,46 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  pages: {
+    signIn: "/login",
+    signOut: "/register",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    jwt: ({ token, user }) => {
+      return {
+        ...token,
+        role: user.role,
+      };
+    },
+    session: ({ session, token, user }) => ({
       ...session,
       user: {
         ...session.user,
         id: user.id,
+        role: token.role,
       },
     }),
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    CredentialProvider({
+      name: "Credentials",
+
+      credentials: {
+        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const user = await prisma.user.findFirst({
+          where: {
+            username: credentials?.username,
+          },
+        });
+        if (!user || !credentials) return null;
+        // Note: this is comparing 2 hashes
+        if (credentials.password !== user.password) return null;
+        return user;
+      },
     }),
     /**
      * ...add more providers here.

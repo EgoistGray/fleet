@@ -1,75 +1,48 @@
-import CreateForm from "@/components/CreateForm";
-import UpdateForm from "@/components/UpdateForm";
+import CreateFormModal from "@/components/CreateFormModal";
+import Dashboard from "@/components/Dashboard";
+import {
+  Table,
+  TableBody,
+  TableColumn,
+  TableContent,
+  TableHead,
+  TableRow,
+} from "@/components/Table";
+import UpdateFormModal from "@/components/UpdateFormModal";
 import {
   ActionIcon,
-  AppShell,
   Button,
-  Divider,
   Menu,
-  Navbar,
-  Table,
-  UnstyledButton,
+  Pagination,
+  Portal,
+  Select,
+  TextInput,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import type { ReactNode } from "react";
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
-import { BsPeopleFill, BsThreeDotsVertical } from "react-icons/bs";
-import { MdLocalShipping } from "react-icons/md";
-
-type NavbarButtonProps = {
-  icon: ReactNode;
-  title: string;
-  to: string;
-};
-function NavbarButton({ icon, title, to }: NavbarButtonProps) {
-  const { pathname } = useRouter();
-  return (
-    <Link href={to}>
-      <UnstyledButton
-        className={`h-14 w-full rounded-xl ${
-          pathname === to ? "bg-teal-600 text-white" : ""
-        }`}
-      >
-        <div className="flex items-center justify-center gap-4">
-          {icon}
-          <div>{title}</div>
-        </div>
-      </UnstyledButton>
-    </Link>
-  );
-}
-
-type EmployeeInfo = {
-  firstName: string;
-  lastName: string;
-  role: string;
-  password: string;
-  username: string;
-};
+import {
+  AiOutlineDelete,
+  AiOutlineEdit,
+  AiOutlinePlus,
+  AiOutlineSearch,
+} from "react-icons/ai";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function Employee() {
-  const openCreateAccount = () =>
-    modals.open({
-      title: "Create New Account",
-      children: <CreateForm />,
-    });
-  const openUpdateAccount = (employeeInfo: EmployeeInfo) => {
-    modals.open({
-      title: "Update Account",
-      children: <UpdateForm employeeInfo={employeeInfo} />,
-    });
-  };
+  const [isCreateFormOpened, { open: openCreateForm, close: closeCreateForm }] =
+    useDisclosure(false);
+  const [isUpdateFormOpened, { open: openUpdateForm, close: closeUpdateForm }] =
+    useDisclosure(false);
 
   const confirmDelete = () => {
     modals.openConfirmModal({
-      title: "Are you sure you want to delete this account?",
+      title: "Are you sure you want to delete TableColumnis account?",
       labels: { confirm: "I understand", cancel: "Cancel" },
+      confirmProps: { color: "red" },
       children: (
         <div>
-          Deleting an account can have major consequences if not done with prior
-          notice. Any account deleted may not be recovered.
+          Deleting an account can have major consequences if not done
+          wiTableColumn prior notice. Any account deleted may not be recovered.
         </div>
       ),
       onCancel: () => {
@@ -82,100 +55,104 @@ export default function Employee() {
   };
 
   return (
-    <AppShell
-      padding="md"
-      navbar={
-        <Navbar
-          width={{ base: 300 }}
-          className="h-full min-h-screen px-6 py-10"
-        >
-          <Navbar.Section>
-            <div className="mx-auto  w-fit text-2xl font-bold">
-              Company Name
-            </div>
-          </Navbar.Section>
-          <Divider className="my-5" />
-          <Navbar.Section>
-            <NavbarButton
-              title="Employee"
-              icon={<BsPeopleFill size={25} />}
-              to="/dashboard/employee"
+    <>
+      <Portal>
+        {/* We want it to be outside the dom */}
+        <CreateFormModal close={closeCreateForm} opened={isCreateFormOpened} />
+        <UpdateFormModal close={closeUpdateForm} opened={isUpdateFormOpened} />
+      </Portal>
+      <Dashboard>
+        {/* Your application here */}
+        <div className="mb-8 flex w-full justify-between rounded-xl ">
+          <div className="text-3xl font-light">Manage Employee</div>
+        </div>
+        <div className="mx-auto flex w-full flex-col items-center gap-5">
+          <div className="flex w-full items-end gap-4 rounded-xl bg-white px-6 py-4 shadow-sm shadow-neutral-900/10">
+            <TextInput
+              icon={<AiOutlineSearch />}
+              className="w-full"
+              placeholder="Type the first name youu're looking for..."
+              color="gray"
+              label="Search Employee"
             />
-            <NavbarButton
-              title="Shipment"
-              icon={<MdLocalShipping size={25} />}
-              to="/dashboard/shipment"
+            <Select
+              label="Sort By"
+              defaultValue="firstName"
+              data={[
+                { label: "By ID", value: "id" },
+                { label: "By First Name", value: "firstName" },
+                { label: "By Last Name", value: "lastName" },
+              ]}
             />
-          </Navbar.Section>
-        </Navbar>
-      }
-      styles={(theme) => ({
-        main: {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
-        },
-      })}
-    >
-      {/* Your application here */}
-      <div className="mb-4 flex w-full justify-between rounded-xl px-10 py-5">
-        <div className="text-3xl font-light">Manage Employee</div>
-        <Button onClick={openCreateAccount}>Create New Account</Button>
-      </div>
-      <Table>
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Role</th>
-            <th>Password</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>sara_minsky</td>
-            <td>Sara</td>
-            <td>Minsky</td>
-            <td>Cashier</td>
-            <td>Password</td>
-            <td>
-              <Menu>
-                <Menu.Target>
-                  <ActionIcon>
-                    <BsThreeDotsVertical />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    icon={<AiOutlineEdit size={14} />}
-                    onClick={() =>
-                      openUpdateAccount({
-                        firstName: "Sara",
-                        lastName: "MinSky",
-                        role: "cashier",
-                        password: "password",
-                        username: "sara_minsky",
-                      })
-                    }
-                  >
-                    Edit Account
-                  </Menu.Item>
-                  <Menu.Item
-                    color="red"
-                    icon={<AiOutlineDelete size={14} />}
-                    onClick={() => confirmDelete()}
-                  >
-                    Delete Account
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            </td>
-          </tr>
-        </tbody>
-      </Table>
-    </AppShell>
+
+            <Button
+              onClick={openCreateForm}
+              className="rounded-full"
+              color="teal"
+              leftIcon={<AiOutlinePlus color="white" />}
+            >
+              Create Account
+            </Button>
+          </div>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableColumn>Username</TableColumn>
+                <TableColumn>First Name</TableColumn>
+                <TableColumn>Last Name</TableColumn>
+                <TableColumn>Role</TableColumn>
+                <TableColumn>Password</TableColumn>
+                <TableColumn>Action</TableColumn>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableContent>sara_minsky</TableContent>
+              <TableContent>Sara</TableContent>
+              <TableContent>Minsky</TableContent>
+              <TableContent>Cashier</TableContent>
+              <TableContent>Password</TableContent>
+              <TableContent>
+                <Menu>
+                  <Menu.Target>
+                    <ActionIcon>
+                      <BsThreeDotsVertical />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item
+                      icon={<AiOutlineEdit size={14} />}
+                      onClick={openUpdateForm}
+                    >
+                      Edit Account
+                    </Menu.Item>
+                    <Menu.Item
+                      color="red"
+                      icon={<AiOutlineDelete size={14} />}
+                      onClick={() => confirmDelete()}
+                    >
+                      Delete Account
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              </TableContent>
+            </TableBody>
+          </Table>
+          <Pagination
+            total={10}
+            styles={(theme) => ({
+              control: {
+                "&[data-active]": {
+                  backgroundImage: theme.fn.gradient({
+                    from: "teal", // Idk how to make it background  color
+                    to: "teal",
+                  }),
+                  border: 0,
+                },
+              },
+            })}
+          />
+        </div>
+      </Dashboard>
+    </>
   );
 }

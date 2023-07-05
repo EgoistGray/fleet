@@ -7,13 +7,24 @@
  * need to use are documented accordingly near the end.
  */
 
-import { initTRPC, TRPCError } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type Session } from "next-auth";
-import superjson from "superjson";
-import { ZodError } from "zod";
 import { getServerAuthSession } from "@/server/auth";
 import { prisma } from "@/server/db";
+import { initTRPC, TRPCError } from "@trpc/server";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { type DefaultSession } from "next-auth";
+import superjson from "superjson";
+import { ZodError } from "zod";
+
+/**
+ *  TEMPORARY FIX FOR TYPE AUGMENTATION NOT WORKING
+ */
+interface Session {
+  user: {
+    /** The user's postal address. */
+    id: string;
+    role?: string; // need to do this to error
+  } & DefaultSession["user"];
+}
 
 /**
  * 1. CONTEXT
@@ -128,3 +139,13 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+const enforceOwnerAccess = t.middleware(({ ctx, next }) => {
+  // TODO: need to modify so it actually validates the admin
+  if (ctx.session?.user.role !== "owner") {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next();
+});
+
+export const adminProcedure = protectedProcedure.use(enforceOwnerAccess);
