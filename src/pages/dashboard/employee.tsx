@@ -24,6 +24,8 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import { type GetServerSideProps } from "next";
+import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useState, type ReactNode } from "react";
 import { toast } from "react-hot-toast";
@@ -272,3 +274,20 @@ function createTableFromUser(
     </Table>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerSession(context.req, context.res, {});
+
+  if (session?.user.role !== "owner")
+    return {
+      // Not efficient because of server processing and several jumps
+      redirect: {
+        destination: "/dashboard/shipment",
+        permanent: false,
+      },
+    };
+
+  return {
+    props: {},
+  };
+};

@@ -151,39 +151,41 @@ export default function Employee() {
           <div className="text-3xl font-light">Manage Shipments</div>
         </div>
         <div className="mx-auto flex w-full flex-col items-center gap-5">
-          <div className="flex w-full items-end gap-4 rounded-xl bg-white px-6 py-4 shadow-sm shadow-neutral-900/10">
-            <TextInput
-              icon={<AiOutlineSearch />}
-              className="w-full"
-              placeholder="Type the name you're looking for..."
-              color="gray"
-              label="Search Shipments"
-              value={searchQuery}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <Select
-              label="Sort By"
-              value={sortBy}
-              onChange={(e) => setSortCriteria(e as string)}
-              data={[
-                { label: "Name", value: "name" },
-                { label: "Weight", value: "weight" },
-                { label: "Sender Name", value: "senderName" },
-                { label: "Sender Address", value: "senderAddress" },
-                { label: "Recipient Name", value: "recipientName" },
-                { label: "Recipient Address", value: "recipientAddress" },
-              ]}
-            />
+          {!(session?.user.role === "courier") && (
+            <div className="flex w-full items-end gap-4 rounded-xl bg-white px-6 py-4 shadow-sm shadow-neutral-900/10">
+              <TextInput
+                icon={<AiOutlineSearch />}
+                className="w-full"
+                placeholder="Type the name you're looking for..."
+                color="gray"
+                label="Search Shipments"
+                value={searchQuery}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              <Select
+                label="Sort By"
+                value={sortBy}
+                onChange={(e) => setSortCriteria(e as string)}
+                data={[
+                  { label: "Name", value: "name" },
+                  { label: "Weight", value: "weight" },
+                  { label: "Sender Name", value: "senderName" },
+                  { label: "Sender Address", value: "senderAddress" },
+                  { label: "Recipient Name", value: "recipientName" },
+                  { label: "Recipient Address", value: "recipientAddress" },
+                ]}
+              />
 
-            <Button
-              onClick={openCreateForm}
-              className="rounded-full"
-              color="teal"
-              leftIcon={<AiOutlinePlus color="white" />}
-            >
-              Create Shipment
-            </Button>
-          </div>
+              <Button
+                onClick={openCreateForm}
+                className="rounded-full"
+                color="teal"
+                leftIcon={<AiOutlinePlus color="white" />}
+              >
+                Create Shipment
+              </Button>
+            </div>
+          )}
 
           {status === "success" && shipments.count <= 0 && (
             <div className="mt-20 flex w-full flex-col items-center justify-center gap-5 text-neutral-400">
@@ -195,38 +197,43 @@ export default function Employee() {
             shipments.count > 0 &&
             createTableFromShipment(shipments, (shipmentInfo) => (
               <>
-                <Menu.Item
-                  icon={<AiOutlineEdit size={14} />}
-                  onClick={() => {
-                    // set jotai global state
-                    setSelectedShipment({
-                      ...shipmentInfo,
-                      company: session?.user.company ?? "",
-                    });
-                    openUpdateForm();
-                  }}
-                >
-                  Edit Shipment
-                </Menu.Item>
-                <Menu.Item
-                  color="green"
-                  icon={<AiOutlineCheck size={14} />}
-                  onClick={() =>
-                    confirmDelivery({
-                      ...shipmentInfo,
-                      company: session?.user.company ?? "",
-                    })
-                  }
-                >
-                  Mark as Delivered
-                </Menu.Item>
-                <Menu.Item
-                  color="red"
-                  icon={<AiOutlineDelete size={14} />}
-                  onClick={() => confirmDelete(shipmentInfo.id)}
-                >
-                  Delete Shipment
-                </Menu.Item>
+                {session?.user.role === "courier" ? (
+                  <Menu.Item
+                    color="green"
+                    icon={<AiOutlineCheck size={14} />}
+                    onClick={() =>
+                      confirmDelivery({
+                        ...shipmentInfo,
+                        company: session?.user.company ?? "",
+                      })
+                    }
+                  >
+                    Mark as Delivered
+                  </Menu.Item>
+                ) : (
+                  <>
+                    <Menu.Item
+                      icon={<AiOutlineEdit size={14} />}
+                      onClick={() => {
+                        // set jotai global state
+                        setSelectedShipment({
+                          ...shipmentInfo,
+                          company: session?.user.company ?? "",
+                        });
+                        openUpdateForm();
+                      }}
+                    >
+                      Edit Shipment
+                    </Menu.Item>
+                    <Menu.Item
+                      color="red"
+                      icon={<AiOutlineDelete size={14} />}
+                      onClick={() => confirmDelete(shipmentInfo.id)}
+                    >
+                      Delete Shipment
+                    </Menu.Item>
+                  </>
+                )}
               </>
             ))}
           <Pagination

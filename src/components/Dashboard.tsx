@@ -1,3 +1,4 @@
+import { getIniitial } from "@/utils/string";
 import { Avatar, Divider, Menu, Navbar, UnstyledButton } from "@mantine/core";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -35,6 +36,9 @@ type DashboardProps = PropsWithChildren;
 export default function Dashboard({ children }: DashboardProps) {
   // assume authenticated
   const { data: session } = useSession();
+  const fullName = `${session?.user.firstName || "John"} ${
+    session?.user.lastName || "Doe"
+  }`;
 
   return (
     <div className="grid h-full min-h-screen w-full grid-cols-[300px_1fr] bg-neutral-50/50">
@@ -50,11 +54,13 @@ export default function Dashboard({ children }: DashboardProps) {
           </Navbar.Section>
           <Divider className="my-5" />
           <Navbar.Section>
-            <NavbarButton
-              title="Employee"
-              icon={<BsPeopleFill size={25} />}
-              to="/dashboard/employee"
-            />
+            {session?.user.role === "owner" && (
+              <NavbarButton
+                title="Employee"
+                icon={<BsPeopleFill size={25} />}
+                to="/dashboard/employee"
+              />
+            )}
             <NavbarButton
               title="Shipment"
               icon={<MdLocalShipping size={25} />}
@@ -72,11 +78,9 @@ export default function Dashboard({ children }: DashboardProps) {
             <Menu.Target>
               <div className="flex w-fit cursor-pointer select-none items-center gap-5">
                 <div className="tracking-loose text-lg font-medium">
-                  {`${session?.user.firstName as string} ${
-                    session?.user.lastName as string
-                  }`}
+                  {fullName}
                 </div>
-                <Avatar color="teal">RB</Avatar>
+                <Avatar color="teal">{getIniitial(fullName)}</Avatar>
               </div>
             </Menu.Target>
             <Menu.Dropdown>
