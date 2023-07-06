@@ -11,3 +11,7 @@ export type EmployeeInfo = {
 export type RegisterType = RouterInputs["users"]["register"];
 export type LoginType = RouterInputs["users"]["login"];
 export type RegisterOut = RouterOutputs["users"]["register"];
+
+export type CreateEmployeeAccount = RouterInputs["users"]["createAccount"];
+export type UpdateEmployeeAccount = RouterInputs["users"]["updateAccount"];
+export type DeleteEmployeeAccount = RouterInputs["users"]["deleteAccount"];

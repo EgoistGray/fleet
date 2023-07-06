@@ -18,7 +18,7 @@ function NavbarButton({ icon, title, to }: NavbarButtonProps) {
     <Link href={to}>
       <UnstyledButton
         className={`h-14 w-full rounded-xl ${
-          pathname === to ? "bg-teal-600 text-white" : ""
+          pathname === to ? "bg-teal-600 text-white" : "text-neutral-700"
         }`}
       >
         <div className="flex items-center justify-center gap-4">

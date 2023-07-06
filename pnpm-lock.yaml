@@ -71,6 +71,9 @@ dependencies:
   react-hook-form:
     specifier: ^7.45.1
     version: 7.45.1(react@18.2.0)
+  react-hook-form-mantine:
+    specifier: ^1.0.10
+    version: 1.0.10(@mantine/core@6.0.16)(react-dom@18.2.0)(react-hook-form@7.45.1)(react@18.2.0)
   react-hot-toast:
     specifier: ^2.4.1
     version: 2.4.1(csstype@3.1.2)(react-dom@18.2.0)(react@18.2.0)
@@ -80,6 +83,9 @@ dependencies:
   superjson:
     specifier: 1.12.2
     version: 1.12.2
+  tiny-invariant:
+    specifier: ^1.3.1
+    version: 1.3.1
   zod:
     specifier: ^3.21.4
     version: 3.21.4
@@ -3312,6 +3318,20 @@ packages:
       scheduler: 0.23.0
     dev: false
 
+  /react-hook-form-mantine@1.0.10(@mantine/core@6.0.16)(react-dom@18.2.0)(react-hook-form@7.45.1)(react@18.2.0):
+    resolution: {integrity: sha512-sTKVZ31n5Waxt7B/U9u9EpfI1TVqKUV6MI+2W9h0XxbMbINR0n4/QmhBPJguHbyTOgWT8G0IgYDVZiqh/lUyYg==}
+    peerDependencies:
+      '@mantine/core': ^6.0.0
+      react: ^18.2.0
+      react-dom: ^18.2.0
+      react-hook-form: ^7.43
+    dependencies:
+      '@mantine/core': 6.0.16(@emotion/react@11.11.1)(@mantine/hooks@6.0.16)(@types/react@18.2.14)(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-hook-form: 7.45.1(react@18.2.0)
+    dev: false
+
   /react-hook-form@7.45.1(react@18.2.0):
     resolution: {integrity: sha512-6dWoFJwycbuFfw/iKMcl+RdAOAOHDiF11KWYhNDRN/OkUt+Di5qsZHwA0OwsVnu9y135gkHpTw9DJA+WzCeR9w==}
     engines: {node: '>=12.22.0'}
@@ -3828,6 +3848,10 @@ packages:
 
   /through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
+    dev: false
+
+  /tiny-invariant@1.3.1:
+    resolution: {integrity: sha512-AD5ih2NlSssTCwsMznbvwMZpJ1cbhkGd2uueNxzv2jDlEeZdU04JQfRnggJQ8DrcVBGjAsCKwFBbDlVNtEMlzw==}
     dev: false
 
   /titleize@3.0.0:

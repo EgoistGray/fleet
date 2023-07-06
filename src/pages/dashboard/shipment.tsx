@@ -1,4 +1,4 @@
-import CreateFormModal from "@/components/CreateFormModal";
+import CreateShipmentModal from "@/components/CreateShipmentModal";
 import Dashboard from "@/components/Dashboard";
 import {
   Table,
@@ -8,7 +8,7 @@ import {
   TableHead,
   TableRow,
 } from "@/components/Table";
-import UpdateFormModal from "@/components/UpdateFormModal";
+import UpdateShipmentModal from "@/components/UpdateShipmentModal";
 import useDebounce from "@/hooks/useDebounce";
 import { api } from "@/utils/api";
 import {
@@ -24,7 +24,6 @@ import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
 import {
   AiOutlineDelete,
   AiOutlineEdit,
@@ -34,7 +33,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { type UpdateEmployeeAccount } from "../../common/types";
 
-const ACCOUNTS_PER_PAGE = 6;
+const SHIPMENTS_PER_PAGE = 6;
 export default function Employee() {
   const [isCreateFormOpened, { open: openCreateForm, close: closeCreateForm }] =
     useDisclosure(false);
@@ -52,8 +51,8 @@ export default function Employee() {
     {
       company: session?.user.company ?? "",
       sortBy,
-      offset: (page - 1) * ACCOUNTS_PER_PAGE,
-      take: ACCOUNTS_PER_PAGE,
+      offset: (page - 1) * SHIPMENTS_PER_PAGE,
+      take: SHIPMENTS_PER_PAGE,
       query: delayedSearch ?? undefined, //make sure it is not sent if there isn't any query
     },
     {
@@ -61,17 +60,7 @@ export default function Employee() {
     }
   );
 
-  const utils = api.useContext();
-  const deleteAccount = api.users.deleteAccount.useMutation({
-    onError: () => {
-      toast.error("Something went wrong, please try again");
-    },
-    onSuccess: async () => {
-      await utils.invalidate();
-      toast.success("Account deleted successfully");
-    },
-  });
-  const confirmDelete = (id: string) => {
+  const confirmDelete = () => {
     modals.openConfirmModal({
       title: "Are you sure you want to delete this account?",
       labels: { confirm: "I understand", cancel: "Cancel" },
@@ -82,8 +71,11 @@ export default function Employee() {
           notice. Any account deleted may not be recovered.
         </div>
       ),
+      onCancel: () => {
+        console.log("cancel delete");
+      },
       onConfirm: () => {
-        deleteAccount.mutate({ id });
+        console.log("imma delete u, ur fired");
       },
     });
   };
@@ -104,8 +96,11 @@ export default function Employee() {
     <>
       <Portal>
         {/* We want it to be outside the dom */}
-        <CreateFormModal close={closeCreateForm} opened={isCreateFormOpened} />
-        <UpdateFormModal
+        <CreateShipmentModal
+          close={closeCreateForm}
+          opened={isCreateFormOpened}
+        />
+        <UpdateShipmentModal
           close={closeUpdateForm}
           opened={isUpdateFormOpened}
           currentProfile={selectedProfile}
@@ -201,7 +196,7 @@ export default function Employee() {
                             <Menu.Item
                               color="red"
                               icon={<AiOutlineDelete size={14} />}
-                              onClick={() => confirmDelete(id)}
+                              onClick={() => confirmDelete()}
                             >
                               Delete Account
                             </Menu.Item>

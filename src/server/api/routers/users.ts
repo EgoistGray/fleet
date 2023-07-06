@@ -106,13 +106,13 @@ export const usersRouter = createTRPCRouter({
   deleteAccount: adminProcedure
     .input(
       z.object({
-        username: z.string(),
+        id: z.string(),
       })
     )
-    .mutation(async ({ input: { username } }) => {
+    .mutation(async ({ input: { id } }) => {
       await prisma.user.delete({
         where: {
-          username,
+          id,
         },
       });
     }),
@@ -120,6 +120,7 @@ export const usersRouter = createTRPCRouter({
   updateAccount: adminProcedure
     .input(
       z.object({
+        id: z.string(),
         username: z.string(),
         firstName: z.string(),
         lastName: z.string(),
@@ -132,32 +133,91 @@ export const usersRouter = createTRPCRouter({
       await prisma.user.update({
         data: input,
         where: {
-          username: input.username,
+          id: input.id,
         },
       });
     }),
 
+  // More efficient way of doing it but i'll handle the date of creation later
   getAccounts: adminProcedure
     .input(
       z.object({
         company: z.string(),
-        orderOption: z.string().nullish(),
+        sortBy: z.string().nullish(),
         startId: z.string().nullish(),
         take: z.number().nullish(),
       })
     )
-    .query(async ({ input: { company, orderOption, startId, take } }) => {
-      return await prisma.user.findMany({
-        where: {
-          company,
-        },
-        take: take ?? 5,
-        cursor: {
-          id: startId ?? undefined,
-        },
-        orderBy: {
-          [orderOption ?? "id"]: "desc",
-        },
-      });
+    .query(async ({ input: { company, sortBy, startId, take } }) => {
+      const page = await prisma.$transaction([
+        prisma.user.count(),
+        prisma.user.findMany({
+          where: {
+            company,
+          },
+          take: take ?? 5,
+          cursor: {
+            id: startId ?? undefined,
+          },
+          orderBy: {
+            [sortBy ?? "id"]: "desc",
+          },
+          skip: 1,
+        }),
+      ]);
+
+      return {
+        count: page[0] ?? 0,
+        data: page[1],
+      };
+    }),
+
+  // Less efficient but better for my sanity
+  getAccountsOffset: adminProcedure
+    .input(
+      z.object({
+        company: z.string(),
+        sortBy: z.string().optional(),
+        offset: z.number().optional(),
+        take: z.number().optional(),
+        query: z.string().optional(),
+      })
+    )
+    .query(async ({ input: { query, company, sortBy, offset, take } }) => {
+      const page = await prisma.$transaction([
+        prisma.user.count({
+          where: {
+            company,
+            role: {
+              not: "owner",
+            },
+            firstName: {
+              contains: query,
+            },
+          },
+        }),
+        prisma.user.findMany({
+          where: {
+            company,
+            role: {
+              not: "owner",
+            },
+            firstName: {
+              contains: query,
+            },
+          },
+          take: take ?? 5,
+          skip: offset ?? 0,
+          orderBy: {
+            [sortBy ?? "id"]: "desc",
+          },
+        }),
+      ]);
+
+      return {
+        count: page[0] ?? 0,
+        pageTotal: Math.ceil(page[0] / (take ?? 1)),
+        data: page[1],
+      };
     }),
 });
