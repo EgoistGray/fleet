@@ -64,7 +64,10 @@ export default function Dashboard({ children }: DashboardProps) {
         </Navbar>
       </div>
       <div>
-        <div className="mb-0 flex h-16 w-full items-center justify-end bg-white px-5">
+        <div className="mb-0 flex h-16 w-full items-center justify-between bg-white px-5">
+          <div className="text-3xl font-black">
+            FLEET<span className="text-lg font-thin">dev v1.0</span>
+          </div>
           <Menu>
             <Menu.Target>
               <div className="flex w-fit cursor-pointer select-none items-center gap-5">
