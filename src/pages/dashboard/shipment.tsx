@@ -1,6 +1,7 @@
-import { type UpdateShipment } from "@/common/types";
+import { type GetShipment, type UpdateShipment } from "@/common/types";
 import CreateShipmentModal from "@/components/CreateShipmentModal";
 import Dashboard from "@/components/Dashboard";
+import ShippingBadge from "@/components/ShippingBadge";
 import {
   Table,
   TableBody,
@@ -24,17 +25,17 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 import {
   AiOutlineCheck,
   AiOutlineDelete,
   AiOutlineEdit,
+  AiOutlineFileDone,
   AiOutlinePlus,
   AiOutlineSearch,
 } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import ShippingBadge from "../../components/ShippingBadge";
 
 const ACCOUNTS_PER_PAGE = 5;
 export default function Employee() {
@@ -183,111 +184,51 @@ export default function Employee() {
               Create Shipment
             </Button>
           </div>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableColumn>Name</TableColumn>
-                <TableColumn>Status</TableColumn>
-                <TableColumn>Weight (kg)</TableColumn>
-                <TableColumn>Sender Name</TableColumn>
-                <TableColumn>Sender Addresss</TableColumn>
-                <TableColumn>Recipient Name</TableColumn>
-                <TableColumn>Recipient Address</TableColumn>
-                <TableColumn>Action</TableColumn>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {status === "success" &&
-                shipments.data.map(
-                  ({
-                    id,
-                    name,
-                    status,
-                    weight,
-                    senderName,
-                    senderAddress,
-                    recipientName,
-                    recipientAddress,
-                  }) => (
-                    <TableRow key={id}>
-                      <TableContent>{name}</TableContent>
-                      <TableContent>
-                        <ShippingBadge
-                          status={
-                            status as
-                              | "pending"
-                              | "processing"
-                              | "shipping"
-                              | "delivered"
-                          }
-                        />
-                      </TableContent>
-                      <TableContent>{weight}</TableContent>
-                      <TableContent>{senderName}</TableContent>
-                      <TableContent>{senderAddress}</TableContent>
-                      <TableContent>{recipientName}</TableContent>
-                      <TableContent>{recipientAddress}</TableContent>
-                      <TableContent>
-                        <Menu>
-                          <Menu.Target>
-                            <ActionIcon>
-                              <BsThreeDotsVertical />
-                            </ActionIcon>
-                          </Menu.Target>
-                          <Menu.Dropdown>
-                            <Menu.Item
-                              icon={<AiOutlineEdit size={14} />}
-                              onClick={() => {
-                                // set jotai global state
-                                setSelectedShipment({
-                                  id,
-                                  name,
-                                  weight,
-                                  status,
-                                  senderName,
-                                  senderAddress,
-                                  recipientName,
-                                  recipientAddress,
-                                  company: session?.user.company ?? "",
-                                });
-                                openUpdateForm();
-                              }}
-                            >
-                              Edit Shipment
-                            </Menu.Item>
-                            <Menu.Item
-                              color="green"
-                              icon={<AiOutlineCheck size={14} />}
-                              onClick={() =>
-                                confirmDelivery({
-                                  id,
-                                  name,
-                                  weight,
-                                  senderName,
-                                  senderAddress,
-                                  recipientName,
-                                  recipientAddress,
-                                  company: session?.user.company ?? "",
-                                })
-                              }
-                            >
-                              Mark as Delivered
-                            </Menu.Item>
-                            <Menu.Item
-                              color="red"
-                              icon={<AiOutlineDelete size={14} />}
-                              onClick={() => confirmDelete(id)}
-                            >
-                              Delete Shipment
-                            </Menu.Item>
-                          </Menu.Dropdown>
-                        </Menu>
-                      </TableContent>
-                    </TableRow>
-                  )
-                )}
-            </TableBody>
-          </Table>
+
+          {status === "success" && shipments.count <= 0 && (
+            <div className="mt-20 flex w-full flex-col items-center justify-center gap-5 text-neutral-400">
+              <AiOutlineFileDone size={200} />
+              <div className="text-4xl font-thin">There are no shipments</div>
+            </div>
+          )}
+          {status === "success" &&
+            shipments.count > 0 &&
+            createTableFromShipment(shipments, (shipmentInfo) => (
+              <>
+                <Menu.Item
+                  icon={<AiOutlineEdit size={14} />}
+                  onClick={() => {
+                    // set jotai global state
+                    setSelectedShipment({
+                      ...shipmentInfo,
+                      company: session?.user.company ?? "",
+                    });
+                    openUpdateForm();
+                  }}
+                >
+                  Edit Shipment
+                </Menu.Item>
+                <Menu.Item
+                  color="green"
+                  icon={<AiOutlineCheck size={14} />}
+                  onClick={() =>
+                    confirmDelivery({
+                      ...shipmentInfo,
+                      company: session?.user.company ?? "",
+                    })
+                  }
+                >
+                  Mark as Delivered
+                </Menu.Item>
+                <Menu.Item
+                  color="red"
+                  icon={<AiOutlineDelete size={14} />}
+                  onClick={() => confirmDelete(shipmentInfo.id)}
+                >
+                  Delete Shipment
+                </Menu.Item>
+              </>
+            ))}
           <Pagination
             total={shipments?.pageTotal ?? 1}
             styles={(theme) => ({
@@ -307,5 +248,82 @@ export default function Employee() {
         </div>
       </Dashboard>
     </>
+  );
+}
+
+function createTableFromShipment(
+  shipments: GetShipment,
+  menuFunc: (shipmentInfo: Omit<UpdateShipment, "company">) => ReactNode
+) {
+  return (
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableColumn>Name</TableColumn>
+          <TableColumn>Status</TableColumn>
+          <TableColumn>Weight (kg)</TableColumn>
+          <TableColumn>Sender Name</TableColumn>
+          <TableColumn>Sender Addresss</TableColumn>
+          <TableColumn>Recipient Name</TableColumn>
+          <TableColumn>Recipient Address</TableColumn>
+          <TableColumn>Action</TableColumn>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {shipments.data.map(
+          ({
+            id,
+            name,
+            status,
+            weight,
+            senderName,
+            senderAddress,
+            recipientName,
+            recipientAddress,
+          }) => (
+            <TableRow key={id}>
+              <TableContent>{name}</TableContent>
+              <TableContent>
+                <ShippingBadge
+                  status={
+                    status as
+                      | "pending"
+                      | "processing"
+                      | "shipping"
+                      | "delivered"
+                  }
+                />
+              </TableContent>
+              <TableContent>{weight}</TableContent>
+              <TableContent>{senderName}</TableContent>
+              <TableContent>{senderAddress}</TableContent>
+              <TableContent>{recipientName}</TableContent>
+              <TableContent>{recipientAddress}</TableContent>
+              <TableContent>
+                <Menu>
+                  <Menu.Target>
+                    <ActionIcon>
+                      <BsThreeDotsVertical />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    {menuFunc({
+                      id,
+                      name,
+                      status,
+                      weight,
+                      senderName,
+                      senderAddress,
+                      recipientName,
+                      recipientAddress,
+                    })}
+                  </Menu.Dropdown>
+                </Menu>
+              </TableContent>
+            </TableRow>
+          )
+        )}
+      </TableBody>
+    </Table>
   );
 }

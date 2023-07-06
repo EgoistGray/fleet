@@ -118,7 +118,7 @@ export default function UpdateFormModal({
           <Button className="rounded-full " color="teal" type="submit">
             Update Account
           </Button>
-          <Button className="rounded-full " color="red">
+          <Button className="rounded-full " color="red" onClick={close}>
             Cancel
           </Button>
         </div>

@@ -1,3 +1,4 @@
+import { type GetEmployee, type UpdateEmployeeAccount } from "@/common/types";
 import CreateAccountModal from "@/components/CreateAccountModal";
 import Dashboard from "@/components/Dashboard";
 import JobBadge from "@/components/JobBadge";
@@ -24,7 +25,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 import {
   AiOutlineDelete,
@@ -32,8 +33,8 @@ import {
   AiOutlinePlus,
   AiOutlineSearch,
 } from "react-icons/ai";
+import { BiSad } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { type UpdateEmployeeAccount } from "../../common/types";
 
 const ACCOUNTS_PER_PAGE = 5;
 export default function Employee() {
@@ -151,96 +152,123 @@ export default function Employee() {
               Create Account
             </Button>
           </div>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableColumn>Username</TableColumn>
-                <TableColumn>First Name</TableColumn>
-                <TableColumn>Last Name</TableColumn>
-                <TableColumn className="">Role</TableColumn>
-                <TableColumn className="max-w-[150px]">
-                  Hashed Password
-                </TableColumn>
-                <TableColumn>Action</TableColumn>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {status === "success" &&
-                users.data.map(
-                  ({ id, username, firstName, lastName, role, password }) => (
-                    <TableRow key={id}>
-                      <TableContent>{username}</TableContent>
-                      <TableContent>{firstName}</TableContent>
-                      <TableContent>{lastName}</TableContent>
-                      <TableContent>
-                        {/* Just to tame the type down */}
-                        <JobBadge job={role as "courier" | "cashier"} />
-                        {/* {role} */}
-                      </TableContent>
-                      <TableContent className="max-w-[150px] pr-10">
-                        <div className="m-0 w-full  overflow-hidden text-ellipsis whitespace-nowrap">
-                          {password}
-                        </div>
-                      </TableContent>
-                      <TableContent>
-                        <Menu>
-                          <Menu.Target>
-                            <ActionIcon>
-                              <BsThreeDotsVertical />
-                            </ActionIcon>
-                          </Menu.Target>
-                          <Menu.Dropdown>
-                            <Menu.Item
-                              icon={<AiOutlineEdit size={14} />}
-                              onClick={() => {
-                                // set jotai global state
-                                setSelectedProfile({
-                                  id,
-                                  firstName,
-                                  lastName,
-                                  role,
-                                  password,
-                                  username,
-                                  company: session?.user.company ?? "",
-                                });
-                                openUpdateForm();
-                              }}
-                            >
-                              Edit Account
-                            </Menu.Item>
-                            <Menu.Item
-                              color="red"
-                              icon={<AiOutlineDelete size={14} />}
-                              onClick={() => confirmDelete(id)}
-                            >
-                              Delete Account
-                            </Menu.Item>
-                          </Menu.Dropdown>
-                        </Menu>
-                      </TableContent>
-                    </TableRow>
-                  )
-                )}
-            </TableBody>
-          </Table>
-          <Pagination
-            total={users?.pageTotal ?? 1}
-            styles={(theme) => ({
-              control: {
-                "&[data-active]": {
-                  backgroundImage: theme.fn.gradient({
-                    from: "teal", // Idk how to make it background  color
-                    to: "teal",
-                  }),
-                  border: 0,
-                },
-              },
-            })}
-            value={page}
-            onChange={setPage}
-          />
+
+          {status === "success" && users.count <= 0 && (
+            <div className="mt-20 flex w-full flex-col items-center justify-center gap-5 text-neutral-400">
+              <BiSad size={200} />
+              <div className="text-4xl font-thin">
+                We could not found any employee records.
+              </div>
+            </div>
+          )}
+          {status === "success" && users.count > 0 && (
+            <>
+              {createTableFromUser(users, (userInfo) => (
+                <>
+                  <Menu.Item
+                    icon={<AiOutlineEdit size={14} />}
+                    onClick={() => {
+                      // set jotai global state
+                      setSelectedProfile({
+                        ...userInfo,
+                        company: session?.user.company ?? "",
+                      });
+                      openUpdateForm();
+                    }}
+                  >
+                    Edit Account
+                  </Menu.Item>
+                  <Menu.Item
+                    color="red"
+                    icon={<AiOutlineDelete size={14} />}
+                    onClick={() => confirmDelete(userInfo.id)}
+                  >
+                    Delete Account
+                  </Menu.Item>
+                </>
+              ))}
+              <Pagination
+                total={users?.pageTotal ?? 1}
+                styles={(theme) => ({
+                  control: {
+                    "&[data-active]": {
+                      backgroundImage: theme.fn.gradient({
+                        from: "teal", // Idk how to make it background  color
+                        to: "teal",
+                      }),
+                      border: 0,
+                    },
+                  },
+                })}
+                value={page}
+                onChange={setPage}
+              />
+            </>
+          )}
         </div>
       </Dashboard>
     </>
+  );
+}
+
+function createTableFromUser(
+  users: GetEmployee,
+  actionDropdown: (
+    userInfo: Omit<UpdateEmployeeAccount, "company">
+  ) => ReactNode
+) {
+  return (
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableColumn>Username</TableColumn>
+          <TableColumn>First Name</TableColumn>
+          <TableColumn>Last Name</TableColumn>
+          <TableColumn className="">Role</TableColumn>
+          <TableColumn className="max-w-[150px]">Hashed Password</TableColumn>
+          <TableColumn>Action</TableColumn>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {users.data.map(
+          ({ id, username, firstName, lastName, role, password }) => (
+            <TableRow key={id}>
+              <TableContent>{username}</TableContent>
+              <TableContent>{firstName}</TableContent>
+              <TableContent>{lastName}</TableContent>
+              <TableContent>
+                {/* Just to tame the type down */}
+                <JobBadge job={role as "courier" | "cashier"} />
+                {/* {role} */}
+              </TableContent>
+              <TableContent className="max-w-[150px] pr-10">
+                <div className="m-0 w-full  overflow-hidden text-ellipsis whitespace-nowrap">
+                  {password}
+                </div>
+              </TableContent>
+              <TableContent>
+                <Menu>
+                  <Menu.Target>
+                    <ActionIcon>
+                      <BsThreeDotsVertical />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    {actionDropdown({
+                      id,
+                      username,
+                      firstName,
+                      lastName,
+                      role,
+                      password,
+                    })}
+                  </Menu.Dropdown>
+                </Menu>
+              </TableContent>
+            </TableRow>
+          )
+        )}
+      </TableBody>
+    </Table>
   );
 }

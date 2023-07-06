@@ -93,7 +93,7 @@ export default function Dashboard({ children }: DashboardProps) {
             </Menu.Dropdown>
           </Menu>
         </div>
-        <div className="px-28 py-10">{children}</div>
+        <div className="px-28 pt-10">{children}</div>
       </div>
     </div>
   );
