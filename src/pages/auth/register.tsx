@@ -2,11 +2,29 @@ import { type RegisterType } from "@/common/types";
 import { api } from "@/utils/api";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { sha256 } from "js-sha256";
+import { type GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { setTimeout } from "timers";
+
+// Redirect if the user is already logged in
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/dashboard/employee",
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: {} };
+};
 
 export default function Register() {
   const router = useRouter();

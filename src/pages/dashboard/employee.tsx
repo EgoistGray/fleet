@@ -106,35 +106,37 @@ export default function Employee() {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableContent>sara_minsky</TableContent>
-              <TableContent>Sara</TableContent>
-              <TableContent>Minsky</TableContent>
-              <TableContent>Cashier</TableContent>
-              <TableContent>Password</TableContent>
-              <TableContent>
-                <Menu>
-                  <Menu.Target>
-                    <ActionIcon>
-                      <BsThreeDotsVertical />
-                    </ActionIcon>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Item
-                      icon={<AiOutlineEdit size={14} />}
-                      onClick={openUpdateForm}
-                    >
-                      Edit Account
-                    </Menu.Item>
-                    <Menu.Item
-                      color="red"
-                      icon={<AiOutlineDelete size={14} />}
-                      onClick={() => confirmDelete()}
-                    >
-                      Delete Account
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
-              </TableContent>
+              <TableRow>
+                <TableContent>sara_minsky</TableContent>
+                <TableContent>Sara</TableContent>
+                <TableContent>Minsky</TableContent>
+                <TableContent>Cashier</TableContent>
+                <TableContent>Password</TableContent>
+                <TableContent>
+                  <Menu>
+                    <Menu.Target>
+                      <ActionIcon>
+                        <BsThreeDotsVertical />
+                      </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        icon={<AiOutlineEdit size={14} />}
+                        onClick={openUpdateForm}
+                      >
+                        Edit Account
+                      </Menu.Item>
+                      <Menu.Item
+                        color="red"
+                        icon={<AiOutlineDelete size={14} />}
+                        onClick={() => confirmDelete()}
+                      >
+                        Delete Account
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </TableContent>
+              </TableRow>
             </TableBody>
           </Table>
           <Pagination

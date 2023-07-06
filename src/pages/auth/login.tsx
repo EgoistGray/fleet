@@ -1,11 +1,29 @@
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { sha256 } from "js-sha256";
-import { signIn } from "next-auth/react";
+import { type GetServerSideProps } from "next";
+import { getSession, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { type LoginType } from "../common/types";
+import { type LoginType } from "../../common/types";
+
+// Redirect if the user is already logged in
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  console.log("DashboardSession: ", session);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/dashboard/employee",
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: {} };
+};
 
 export default function Login() {
   const {
@@ -15,6 +33,7 @@ export default function Login() {
   } = useForm<LoginType>();
 
   const router = useRouter();
+  const session = useSession();
 
   const onSubmit: SubmitHandler<LoginType> = async (credentials) => {
     const status = await signIn("credentials", {
@@ -23,6 +42,8 @@ export default function Login() {
       redirect: false,
     });
 
+    // TODO: figure out why the session is not stored
+    console.log(session);
     if (status?.ok) await router.replace("/dashboard/employee");
     if (status?.error) toast.error("Wrong username or password");
   };

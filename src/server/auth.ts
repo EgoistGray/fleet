@@ -1,11 +1,13 @@
 import { prisma } from "@/server/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
+import type { DefaultUser } from "next-auth";
 import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
+import type { DefaultJWT } from "next-auth/jwt";
 import CredentialProvider from "next-auth/providers/credentials";
 
 /**
@@ -18,15 +20,33 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      role: string;
+      company: string;
+      firstName: string;
+      lastName: string;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User extends DefaultUser {
+    id: string;
+    role: string;
+    company: string;
+    firstName: string;
+    lastName: string;
+  }
+}
+declare module "next-auth/jwt" {
+  interface JWT extends DefaultJWT {
+    user: {
+      id: string;
+      role: string;
+      company: string;
+      firstName: string;
+      lastName: string;
+    };
+  }
 }
 
 /**
@@ -35,25 +55,42 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   pages: {
-    signIn: "/login",
-    signOut: "/register",
+    signIn: "/auth/login",
+    signOut: "/auth/register",
   },
   callbacks: {
     jwt: ({ token, user }) => {
-      return {
-        ...token,
-        role: user.role,
-      };
+      if (user) {
+        token.user = {
+          id: user.id,
+          role: user.role,
+          company: user.company,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        };
+      }
+      return token;
     },
-    session: ({ session, token, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-        role: token.role,
-      },
-    }),
+
+    session: ({ session, token }) => {
+      if (session.user && token.user) {
+        session.user.id = token.user.id;
+        session.user.role = token.user.role;
+        session.user.company = token.user.company;
+        session.user.firstName = token.user.firstName;
+        session.user.lastName = token.user.lastName;
+
+        // session.user = {
+        //   ...session.user,
+        //   ...token.user,
+        // };
+      }
+      return session;
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -73,6 +110,11 @@ export const authOptions: NextAuthOptions = {
         if (!user || !credentials) return null;
         // Note: this is comparing 2 hashes
         if (credentials.password !== user.password) return null;
+        console.log(
+          "Identification Status:",
+          credentials.password === user.password,
+          user
+        );
         return user;
       },
     }),

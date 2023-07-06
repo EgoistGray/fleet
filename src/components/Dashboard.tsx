@@ -1,7 +1,8 @@
 import { Avatar, Divider, Menu, Navbar, UnstyledButton } from "@mantine/core";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import type { PropsWithChildren, ReactNode } from "react";
+import { type PropsWithChildren, type ReactNode } from "react";
 import { BiLogOut } from "react-icons/bi";
 import { BsPeopleFill } from "react-icons/bs";
 import { MdLocalShipping } from "react-icons/md";
@@ -32,6 +33,9 @@ function NavbarButton({ icon, title, to }: NavbarButtonProps) {
 type DashboardProps = PropsWithChildren;
 
 export default function Dashboard({ children }: DashboardProps) {
+  // assume authenticated
+  const { data: session } = useSession();
+
   return (
     <div className="grid h-full min-h-screen w-full grid-cols-[300px_1fr] bg-neutral-50/50">
       <div>
@@ -40,7 +44,9 @@ export default function Dashboard({ children }: DashboardProps) {
           className="h-full min-h-screen select-none px-6 py-10"
         >
           <Navbar.Section>
-            <div className="mx-auto w-fit text-2xl font-bold">Company Name</div>
+            <div className="mx-auto w-fit text-2xl font-bold">
+              {session?.user.company}
+            </div>
           </Navbar.Section>
           <Divider className="my-5" />
           <Navbar.Section>
@@ -63,14 +69,25 @@ export default function Dashboard({ children }: DashboardProps) {
             <Menu.Target>
               <div className="flex w-fit cursor-pointer select-none items-center gap-5">
                 <div className="tracking-loose text-lg font-medium">
-                  Ronald Bucky
+                  {`${session?.user.firstName as string} ${
+                    session?.user.lastName as string
+                  }`}
                 </div>
                 <Avatar color="teal">RB</Avatar>
               </div>
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Label>Account Control</Menu.Label>
-              <Menu.Item color="red" icon={<BiLogOut />}>
+              <Menu.Item
+                color="red"
+                icon={<BiLogOut />}
+                onClick={() => {
+                  void signOut({
+                    callbackUrl: "/",
+                    redirect: true,
+                  });
+                }}
+              >
                 Logout
               </Menu.Item>
             </Menu.Dropdown>
