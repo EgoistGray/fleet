@@ -34,8 +34,9 @@ import {
   AiOutlineSearch,
 } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import ShippingBadge from "../../components/ShippingBadge";
 
-const ACCOUNTS_PER_PAGE = 6;
+const ACCOUNTS_PER_PAGE = 5;
 export default function Employee() {
   const [isCreateFormOpened, { open: openCreateForm, close: closeCreateForm }] =
     useDisclosure(false);
@@ -210,7 +211,17 @@ export default function Employee() {
                   }) => (
                     <TableRow key={id}>
                       <TableContent>{name}</TableContent>
-                      <TableContent>{status}</TableContent>
+                      <TableContent>
+                        <ShippingBadge
+                          status={
+                            status as
+                              | "pending"
+                              | "processing"
+                              | "shipping"
+                              | "delivered"
+                          }
+                        />
+                      </TableContent>
                       <TableContent>{weight}</TableContent>
                       <TableContent>{senderName}</TableContent>
                       <TableContent>{senderAddress}</TableContent>

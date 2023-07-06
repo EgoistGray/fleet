@@ -1,5 +1,6 @@
 import CreateAccountModal from "@/components/CreateAccountModal";
 import Dashboard from "@/components/Dashboard";
+import JobBadge from "@/components/JobBadge";
 import {
   Table,
   TableBody,
@@ -34,7 +35,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { type UpdateEmployeeAccount } from "../../common/types";
 
-const ACCOUNTS_PER_PAGE = 6;
+const ACCOUNTS_PER_PAGE = 5;
 export default function Employee() {
   const [isCreateFormOpened, { open: openCreateForm, close: closeCreateForm }] =
     useDisclosure(false);
@@ -156,8 +157,10 @@ export default function Employee() {
                 <TableColumn>Username</TableColumn>
                 <TableColumn>First Name</TableColumn>
                 <TableColumn>Last Name</TableColumn>
-                <TableColumn>Role</TableColumn>
-                <TableColumn>Hashed Password</TableColumn>
+                <TableColumn className="">Role</TableColumn>
+                <TableColumn className="max-w-[150px]">
+                  Hashed Password
+                </TableColumn>
                 <TableColumn>Action</TableColumn>
               </TableRow>
             </TableHead>
@@ -169,9 +172,13 @@ export default function Employee() {
                       <TableContent>{username}</TableContent>
                       <TableContent>{firstName}</TableContent>
                       <TableContent>{lastName}</TableContent>
-                      <TableContent>{role}</TableContent>
                       <TableContent>
-                        <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap pr-10">
+                        {/* Just to tame the type down */}
+                        <JobBadge job={role as "courier" | "cashier"} />
+                        {/* {role} */}
+                      </TableContent>
+                      <TableContent className="max-w-[150px] pr-10">
+                        <div className="m-0 w-full  overflow-hidden text-ellipsis whitespace-nowrap">
                           {password}
                         </div>
                       </TableContent>

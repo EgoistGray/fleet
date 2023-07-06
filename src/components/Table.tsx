@@ -15,9 +15,13 @@ export function TableHead({ children, ...props }: ComponentProps<"thead">) {
   );
 }
 
-export function TableColumn({ children, ...props }: ComponentProps<"th">) {
+export function TableColumn({
+  className = "",
+  children,
+  ...props
+}: ComponentProps<"th">) {
   return (
-    <th {...props} className="max-w-[150px] py-3">
+    <th {...props} className={` py-3 ${className}`}>
       {children}
     </th>
   );
@@ -33,7 +37,7 @@ export function TableContent({
   ...props
 }: ComponentProps<"td">) {
   return (
-    <td {...props} className={`${className} max-w-[150px] py-5`}>
+    <td {...props} className={`${className}  py-5`}>
       {children}
     </td>
   );
