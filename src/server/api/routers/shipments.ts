@@ -32,7 +32,7 @@ export const shipmentsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input: { shipmentId } }) => {
-      await prisma.user.delete({
+      await prisma.shipment.delete({
         where: {
           id: shipmentId,
         },
@@ -46,6 +46,7 @@ export const shipmentsRouter = createTRPCRouter({
         company: z.string(),
         name: z.string(),
         weight: z.number(),
+        status: z.string(),
 
         senderName: z.string(),
         senderAddress: z.string(),
@@ -54,7 +55,7 @@ export const shipmentsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      await prisma.user.update({
+      await prisma.shipment.update({
         data: input,
         where: {
           id: input.id,
@@ -66,12 +67,12 @@ export const shipmentsRouter = createTRPCRouter({
     .input(
       z.object({
         company: z.string(),
-        orderOption: z.string().nullish(),
-        startId: z.string().nullish(),
-        take: z.number().nullish(),
+        sortBy: z.string().optional(),
+        startId: z.string().optional(),
+        take: z.number().optional(),
       })
     )
-    .query(async ({ input: { company, orderOption, startId, take } }) => {
+    .query(async ({ input: { company, sortBy, startId, take } }) => {
       return await prisma.shipment.findMany({
         where: {
           company,
@@ -81,8 +82,48 @@ export const shipmentsRouter = createTRPCRouter({
           id: startId ?? undefined,
         },
         orderBy: {
-          [orderOption ?? "id"]: "desc",
+          [sortBy ?? "id"]: "desc",
         },
       });
+    }),
+  getShipmentsOffset: protectedProcedure
+    .input(
+      z.object({
+        company: z.string(),
+        sortBy: z.string().optional(),
+        offset: z.number().optional(),
+        take: z.number().optional(),
+        query: z.string().optional(),
+      })
+    )
+    .query(async ({ input: { company, sortBy, offset, take, query } }) => {
+      const page = await prisma.$transaction([
+        prisma.shipment.count({
+          where: {
+            company,
+            name: {
+              contains: query,
+            },
+          },
+        }),
+        prisma.shipment.findMany({
+          where: {
+            company,
+            name: {
+              contains: query,
+            },
+          },
+          skip: offset ?? 0,
+          take: take ?? 5,
+          orderBy: {
+            [sortBy ?? "id"]: "desc",
+          },
+        }),
+      ]);
+      return {
+        count: page[0],
+        pageTotal: Math.ceil(page[0] / (take ?? 1)),
+        data: page[1],
+      };
     }),
 });

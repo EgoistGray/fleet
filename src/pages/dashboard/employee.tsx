@@ -1,4 +1,4 @@
-import CreateFormModal from "@/components/CreateFormModal";
+import CreateAccountModal from "@/components/CreateAccountModal";
 import Dashboard from "@/components/Dashboard";
 import {
   Table,
@@ -8,7 +8,7 @@ import {
   TableHead,
   TableRow,
 } from "@/components/Table";
-import UpdateFormModal from "@/components/UpdateFormModal";
+import UpdateAccountModal from "@/components/UpdateAccountModal";
 import useDebounce from "@/hooks/useDebounce";
 import { api } from "@/utils/api";
 import {
@@ -104,8 +104,11 @@ export default function Employee() {
     <>
       <Portal>
         {/* We want it to be outside the dom */}
-        <CreateFormModal close={closeCreateForm} opened={isCreateFormOpened} />
-        <UpdateFormModal
+        <CreateAccountModal
+          close={closeCreateForm}
+          opened={isCreateFormOpened}
+        />
+        <UpdateAccountModal
           close={closeUpdateForm}
           opened={isUpdateFormOpened}
           currentProfile={selectedProfile}

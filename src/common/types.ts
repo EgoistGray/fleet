@@ -15,3 +15,7 @@ export type RegisterOut = RouterOutputs["users"]["register"];
 export type CreateEmployeeAccount = RouterInputs["users"]["createAccount"];
 export type UpdateEmployeeAccount = RouterInputs["users"]["updateAccount"];
 export type DeleteEmployeeAccount = RouterInputs["users"]["deleteAccount"];
+
+export type CreateShipment = RouterInputs["shipments"]["createShipment"];
+export type UpdateShipment = RouterInputs["shipments"]["updateShipment"];
+export type DeleteShipment = RouterInputs["shipments"]["deleteShipment"];

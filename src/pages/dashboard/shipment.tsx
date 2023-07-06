@@ -1,3 +1,4 @@
+import { type UpdateShipment } from "@/common/types";
 import CreateShipmentModal from "@/components/CreateShipmentModal";
 import Dashboard from "@/components/Dashboard";
 import {
@@ -24,16 +25,17 @@ import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import {
+  AiOutlineCheck,
   AiOutlineDelete,
   AiOutlineEdit,
   AiOutlinePlus,
   AiOutlineSearch,
 } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { type UpdateEmployeeAccount } from "../../common/types";
 
-const SHIPMENTS_PER_PAGE = 6;
+const ACCOUNTS_PER_PAGE = 6;
 export default function Employee() {
   const [isCreateFormOpened, { open: openCreateForm, close: closeCreateForm }] =
     useDisclosure(false);
@@ -42,17 +44,17 @@ export default function Employee() {
 
   const { data: session } = useSession();
   const [page, setPage] = useState(1);
-  const [sortBy, setSortCriteria] = useState("id");
+  const [sortBy, setSortCriteria] = useState("name");
 
   const [searchQuery, setQuery] = useState("");
   const delayedSearch = useDebounce(searchQuery, 300);
 
-  const { data: users, status } = api.users.getAccountsOffset.useQuery(
+  const { data: shipments, status } = api.shipments.getShipmentsOffset.useQuery(
     {
       company: session?.user.company ?? "",
       sortBy,
-      offset: (page - 1) * SHIPMENTS_PER_PAGE,
-      take: SHIPMENTS_PER_PAGE,
+      offset: (page - 1) * ACCOUNTS_PER_PAGE,
+      take: ACCOUNTS_PER_PAGE,
       query: delayedSearch ?? undefined, //make sure it is not sent if there isn't any query
     },
     {
@@ -60,9 +62,19 @@ export default function Employee() {
     }
   );
 
-  const confirmDelete = () => {
+  const utils = api.useContext();
+  const deleteShipment = api.shipments.deleteShipment.useMutation({
+    onError: () => {
+      toast.error("Something went wrong, please try again");
+    },
+    onSuccess: async () => {
+      await utils.invalidate();
+      toast.success("Shipment deleted successfully");
+    },
+  });
+  const confirmDelete = (shipmentId: string) => {
     modals.openConfirmModal({
-      title: "Are you sure you want to delete this account?",
+      title: "Are you sure you want to delete this shipment?",
       labels: { confirm: "I understand", cancel: "Cancel" },
       confirmProps: { color: "red" },
       children: (
@@ -71,27 +83,52 @@ export default function Employee() {
           notice. Any account deleted may not be recovered.
         </div>
       ),
-      onCancel: () => {
-        console.log("cancel delete");
-      },
       onConfirm: () => {
-        console.log("imma delete u, ur fired");
+        deleteShipment.mutate({ shipmentId });
       },
     });
   };
 
-  const [selectedProfile, setSelectedProfile] = useState<UpdateEmployeeAccount>(
-    {
-      id: "",
-      firstName: "",
-      lastName: "",
-      company: "",
-      role: "",
-      password: "",
-      username: "",
-    }
-  );
+  const [selectedShipment, setSelectedShipment] = useState<UpdateShipment>({
+    id: "",
+    company: "",
+    name: "",
+    status: "",
+    weight: 0,
+    senderName: "",
+    senderAddress: "",
+    recipientName: "",
+    recipientAddress: "",
+  });
 
+  const updateShipment = api.shipments.updateShipment.useMutation({
+    onSuccess: async () => {
+      await utils.invalidate(); // we want to just refresh the users but aw well
+      toast.success("Marked as delivered!");
+      close();
+    },
+    onError: () => {
+      toast.error("Something went wrong, try again later.");
+    },
+  });
+
+  const confirmDelivery = (shipmentInfo: Omit<UpdateShipment, "status">) => {
+    modals.openConfirmModal({
+      title: "Are you sure?",
+      labels: { confirm: "I understand", cancel: "Cancel" },
+      confirmProps: { color: "green" },
+      children: (
+        <div>
+          We would like to remind you to double-check for anything you might
+          have missed. Once you mark it as delivered, it&apos;ll be very
+          difficult to reverse.
+        </div>
+      ),
+      onConfirm: () => {
+        updateShipment.mutate({ ...shipmentInfo, status: "delivered" });
+      },
+    });
+  };
   return (
     <>
       <Portal>
@@ -103,22 +140,22 @@ export default function Employee() {
         <UpdateShipmentModal
           close={closeUpdateForm}
           opened={isUpdateFormOpened}
-          currentProfile={selectedProfile}
+          selectedShipment={selectedShipment}
         />
       </Portal>
       <Dashboard>
         {/* Your application here */}
         <div className="mb-8 flex w-full justify-between rounded-xl ">
-          <div className="text-3xl font-light">Manage Employee</div>
+          <div className="text-3xl font-light">Manage Shipments</div>
         </div>
         <div className="mx-auto flex w-full flex-col items-center gap-5">
           <div className="flex w-full items-end gap-4 rounded-xl bg-white px-6 py-4 shadow-sm shadow-neutral-900/10">
             <TextInput
               icon={<AiOutlineSearch />}
               className="w-full"
-              placeholder="Type the first name you're looking for..."
+              placeholder="Type the name you're looking for..."
               color="gray"
-              label="Search Employee"
+              label="Search Shipments"
               value={searchQuery}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -127,9 +164,12 @@ export default function Employee() {
               value={sortBy}
               onChange={(e) => setSortCriteria(e as string)}
               data={[
-                { label: "ID", value: "id" },
-                { label: "First Name", value: "firstName" },
-                { label: "Last Name", value: "lastName" },
+                { label: "Name", value: "name" },
+                { label: "Weight", value: "weight" },
+                { label: "Sender Name", value: "senderName" },
+                { label: "Sender Address", value: "senderAddress" },
+                { label: "Recipient Name", value: "recipientName" },
+                { label: "Recipient Address", value: "recipientAddress" },
               ]}
             />
 
@@ -139,34 +179,43 @@ export default function Employee() {
               color="teal"
               leftIcon={<AiOutlinePlus color="white" />}
             >
-              Create Account
+              Create Shipment
             </Button>
           </div>
           <Table>
             <TableHead>
               <TableRow>
-                <TableColumn>Username</TableColumn>
-                <TableColumn>First Name</TableColumn>
-                <TableColumn>Last Name</TableColumn>
-                <TableColumn>Role</TableColumn>
-                <TableColumn>Hashed Password</TableColumn>
+                <TableColumn>Name</TableColumn>
+                <TableColumn>Status</TableColumn>
+                <TableColumn>Weight (kg)</TableColumn>
+                <TableColumn>Sender Name</TableColumn>
+                <TableColumn>Sender Addresss</TableColumn>
+                <TableColumn>Recipient Name</TableColumn>
+                <TableColumn>Recipient Address</TableColumn>
                 <TableColumn>Action</TableColumn>
               </TableRow>
             </TableHead>
             <TableBody>
               {status === "success" &&
-                users.data.map(
-                  ({ id, username, firstName, lastName, role, password }) => (
+                shipments.data.map(
+                  ({
+                    id,
+                    name,
+                    status,
+                    weight,
+                    senderName,
+                    senderAddress,
+                    recipientName,
+                    recipientAddress,
+                  }) => (
                     <TableRow key={id}>
-                      <TableContent>{username}</TableContent>
-                      <TableContent>{firstName}</TableContent>
-                      <TableContent>{lastName}</TableContent>
-                      <TableContent>{role}</TableContent>
-                      <TableContent>
-                        <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap pr-10">
-                          {password}
-                        </div>
-                      </TableContent>
+                      <TableContent>{name}</TableContent>
+                      <TableContent>{status}</TableContent>
+                      <TableContent>{weight}</TableContent>
+                      <TableContent>{senderName}</TableContent>
+                      <TableContent>{senderAddress}</TableContent>
+                      <TableContent>{recipientName}</TableContent>
+                      <TableContent>{recipientAddress}</TableContent>
                       <TableContent>
                         <Menu>
                           <Menu.Target>
@@ -179,26 +228,46 @@ export default function Employee() {
                               icon={<AiOutlineEdit size={14} />}
                               onClick={() => {
                                 // set jotai global state
-                                setSelectedProfile({
+                                setSelectedShipment({
                                   id,
-                                  firstName,
-                                  lastName,
-                                  role,
-                                  password,
-                                  username,
+                                  name,
+                                  weight,
+                                  status,
+                                  senderName,
+                                  senderAddress,
+                                  recipientName,
+                                  recipientAddress,
                                   company: session?.user.company ?? "",
                                 });
                                 openUpdateForm();
                               }}
                             >
-                              Edit Account
+                              Edit Shipment
+                            </Menu.Item>
+                            <Menu.Item
+                              color="green"
+                              icon={<AiOutlineCheck size={14} />}
+                              onClick={() =>
+                                confirmDelivery({
+                                  id,
+                                  name,
+                                  weight,
+                                  senderName,
+                                  senderAddress,
+                                  recipientName,
+                                  recipientAddress,
+                                  company: session?.user.company ?? "",
+                                })
+                              }
+                            >
+                              Mark as Delivered
                             </Menu.Item>
                             <Menu.Item
                               color="red"
                               icon={<AiOutlineDelete size={14} />}
-                              onClick={() => confirmDelete()}
+                              onClick={() => confirmDelete(id)}
                             >
-                              Delete Account
+                              Delete Shipment
                             </Menu.Item>
                           </Menu.Dropdown>
                         </Menu>
@@ -209,7 +278,7 @@ export default function Employee() {
             </TableBody>
           </Table>
           <Pagination
-            total={users?.pageTotal ?? 1}
+            total={shipments?.pageTotal ?? 1}
             styles={(theme) => ({
               control: {
                 "&[data-active]": {

@@ -1,12 +1,10 @@
 import { api } from "@/utils/api";
-import { Button, Modal, PasswordInput, TextInput } from "@mantine/core";
-import { sha256 } from "js-sha256";
+import { Button, Modal, TextInput } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { Select } from "react-hook-form-mantine";
 import { toast } from "react-hot-toast";
 import invariant from "tiny-invariant";
-import { type CreateEmployeeAccount } from "../common/types";
+import { type CreateShipment } from "../common/types";
 
 export default function CreateFormModal({
   opened,
@@ -19,34 +17,32 @@ export default function CreateFormModal({
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
-  } = useForm<CreateEmployeeAccount>();
+  } = useForm<CreateShipment>();
 
   const utils = api.useContext();
-  const createAccount = api.users.createAccount.useMutation({
+  const createShipment = api.shipments.createShipment.useMutation({
     onSuccess: async () => {
       await utils.invalidate(); // we want to just refresh the users but aw well
-      toast.success("Account created successfully");
+      toast.success("Shipment created successfully");
       close();
     },
     onError: () => {
-      toast.error("Username has been taken. Please use another one.");
+      toast.error("Something went wrong, try again later.");
     },
   });
 
-  const onSubmit: SubmitHandler<CreateEmployeeAccount> = (data) => {
+  const onSubmit: SubmitHandler<CreateShipment> = (data) => {
     invariant(session?.user.company);
 
-    createAccount.mutate({
+    createShipment.mutate({
       ...data,
-      password: sha256.hex(data.password),
       company: session.user.company,
     });
   };
 
   return (
-    <Modal onClose={close} opened={opened} title="Create New Employee Account">
+    <Modal onClose={close} opened={opened} title="Create New Shipment">
       <form
         autoComplete="off"
         className="flex flex-col gap-5"
@@ -56,49 +52,63 @@ export default function CreateFormModal({
       >
         <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
           <TextInput
-            label="First Name"
-            placeholder="Robert"
-            {...register("firstName", {
+            label="Name"
+            placeholder="Parcel to Palembang"
+            {...register("name", {
               required: "Please provide your first name",
             })}
-            error={errors.firstName?.message}
+            error={errors.name?.message}
           />
           <TextInput
-            label="Last Name"
-            placeholder="Manuski"
-            {...register("lastName", {
-              required: "Please provide your last name",
+            label="Weight (kg)"
+            placeholder="10"
+            {...register("weight", {
+              required: "Please specify the weight",
+              valueAsNumber: true,
+              validate: {
+                isNumber: (val) =>
+                  !isNaN(val) ? true : "Please enter a valid weight",
+              },
             })}
-            error={errors.lastName?.message}
+            error={errors.weight?.message}
           />
         </div>
         <TextInput
-          label="Username"
-          placeholder="robert_manuski"
-          {...register("username", {
-            required: "Please provide a username",
+          label="Sender Name"
+          placeholder="Robert Manuski"
+          {...register("senderName", {
+            required: "Please provide the sender's name",
           })}
-          error={errors.username?.message}
+          error={errors.senderName?.message}
         />
-        <Select
-          label="Role"
-          placeholder="Delivery"
-          name="role"
-          control={control}
-          data={[
-            { value: "courier", label: "Courier" },
-            { value: "cashier", label: "Cashier" },
-          ]}
-          defaultValue={"courier"}
+        <TextInput
+          label="Sender Address"
+          placeholder="Flowy Blowy Street 31, Lunar Town, Binstraks District"
+          {...register("senderAddress", {
+            required: "Please provide the sender's address",
+          })}
+          error={errors.senderAddress?.message}
         />
-        <PasswordInput
-          label="Password"
-          {...register("password", { required: "Please enter a password" })}
-          error={errors.password?.message}
+        <TextInput
+          label="Recipient Name"
+          placeholder="Skuwy Don"
+          {...register("recipientName", {
+            required: "Please provide the recipient's name",
+          })}
+          error={errors.recipientName?.message}
         />
+        <TextInput
+          label="Recipient Address"
+          placeholder="Flowy Blowy Street 31, Lunar Town, Binstraks District"
+          {...register("recipientAddress", {
+            required: "Please provide the recipient's address",
+          })}
+          error={errors.recipientAddress?.message}
+        />
+
         <div className="mt-3 grid w-full grid-cols-2 gap-4">
           <Button className="rounded-full " color="teal" type="submit">
-            Create Account
+            Create Shipment
           </Button>
           <Button className="rounded-full " color="red" onClick={close}>
             Cancel

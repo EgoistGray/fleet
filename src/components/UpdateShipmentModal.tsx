@@ -1,69 +1,54 @@
 import { api } from "@/utils/api";
-import { Button, Modal, PasswordInput, TextInput } from "@mantine/core";
-import { sha256 } from "js-sha256";
+import { Button, Modal, TextInput } from "@mantine/core";
+import { useSession } from "next-auth/react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { Select } from "react-hook-form-mantine";
 import { toast } from "react-hot-toast";
-import { type UpdateEmployeeAccount } from "../common/types";
+import invariant from "tiny-invariant";
+import { type UpdateShipment } from "../common/types";
 
-/**
- *
- *  TODO:
- *  1. Finish this page with react-hook-form handler
- *  2. Finish the shipment assignment using similar mechanic as this one
- *  3. grid-cols-2 the first name and the last name to make it more professional
- *  4. fix the damn ui?
- *  5. make trpc procedure and other things
- *  6. Hook the front end and the back end
- *  7. Get NextAuth to work with the credentials (and yes there's also the trpc part)
- *
- */
-
-export default function UpdateFormModal({
-  currentProfile,
+export default function CreateFormModal({
   opened,
   close,
+  selectedShipment,
 }: {
-  currentProfile: UpdateEmployeeAccount;
+  selectedShipment: UpdateShipment;
   opened: boolean;
   close: () => void;
 }) {
-  // NOT the greatest solution, but I don't have time
-  // but here are some ideas how to make it better
-  // 1. Make modal unmount and mount
-  // integrate jotai directly
+  const { data: session } = useSession();
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<UpdateEmployeeAccount>({
-    values: {
-      ...currentProfile,
-      password: "",
-    },
+  } = useForm<UpdateShipment>({
+    values: selectedShipment,
   });
 
   const utils = api.useContext();
-  const updateAccount = api.users.updateAccount.useMutation({
+  const updateShipment = api.shipments.updateShipment.useMutation({
     onSuccess: async () => {
-      await utils.invalidate();
-      toast.success("Account has been updated");
+      await utils.invalidate(); // we want to just refresh the users but aw well
+      toast.success("Shipment created successfully");
       close();
     },
     onError: () => {
-      toast.error("Username has been taken, please try another one.");
+      toast.error("Something went wrong, try again later.");
     },
   });
-  const onSubmit: SubmitHandler<UpdateEmployeeAccount> = (newInfo) => {
-    updateAccount.mutate({
-      ...newInfo,
-      password: sha256.hex(newInfo.password),
+
+  const onSubmit: SubmitHandler<UpdateShipment> = (data) => {
+    invariant(session?.user.company);
+
+    updateShipment.mutate({
+      ...data,
+      company: session.user.company,
     });
   };
 
   return (
-    <Modal title="Update Account" onClose={close} opened={opened}>
+    <Modal onClose={close} opened={opened} title="Update Shipment">
       <form
         autoComplete="off"
         className="flex flex-col gap-5"
@@ -73,52 +58,78 @@ export default function UpdateFormModal({
       >
         <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
           <TextInput
-            label="First Name"
-            placeholder="Robert"
-            {...register("firstName", {
-              required: "Please provide a first name",
+            label="Name"
+            placeholder="Parcel to Palembang"
+            {...register("name", {
+              required: "Please provide your first name",
             })}
-            error={errors.firstName?.message}
+            error={errors.name?.message}
           />
           <TextInput
-            label="Last Name"
-            placeholder="Manuski"
-            {...register("lastName", {
-              required: "Please provide a last name",
+            label="Weight (kg)"
+            placeholder="10"
+            {...register("weight", {
+              required: "Please specify the weight",
+              valueAsNumber: true,
+              validate: {
+                isNumber: (val) =>
+                  !isNaN(val) ? true : "Please enter a valid weight",
+              },
             })}
-            error={errors.lastName?.message}
+            error={errors.weight?.message}
           />
         </div>
         <TextInput
-          label="Username"
-          placeholder="robert_manuski"
-          {...register("username", {
-            required: "Please enter a user name",
+          label="Sender Name"
+          placeholder="Robert Manuski"
+          {...register("senderName", {
+            required: "Please provide the sender's name",
           })}
-          error={errors.username?.message}
+          error={errors.senderName?.message}
+        />
+        <TextInput
+          label="Sender Address"
+          placeholder="Flowy Blowy Street 31, Lunar Town, Binstraks District"
+          {...register("senderAddress", {
+            required: "Please provide the sender's address",
+          })}
+          error={errors.senderAddress?.message}
+        />
+        <TextInput
+          label="Recipient Name"
+          placeholder="Skuwy Don"
+          {...register("recipientName", {
+            required: "Please provide the recipient's name",
+          })}
+          error={errors.recipientName?.message}
+        />
+        <TextInput
+          label="Recipient Address"
+          placeholder="Flowy Blowy Street 31, Lunar Town, Binstraks District"
+          {...register("recipientAddress", {
+            required: "Please provide the recipient's address",
+          })}
+          error={errors.recipientAddress?.message}
         />
         <Select
-          label="Role"
-          name="role"
-          control={control}
+          label="Status"
           placeholder="Delivery"
+          name="status"
+          control={control}
           data={[
-            { value: "courier", label: "Courier" },
-            { value: "cashier", label: "Cashier" },
+            { label: "Pending", value: "pending" },
+            { label: "Processing", value: "processing" },
+            { label: "Shipping", value: "shipping" },
+            { label: "Delivered", value: "delivered" },
+            { label: "Error", value: "error" },
           ]}
-        />
-        <PasswordInput
-          label="Password"
-          {...register("password", {
-            required: "Please enter a new password",
-          })}
-          error={errors.password?.message}
+          defaultValue={"pending"}
         />
         <div className="mt-3 grid w-full grid-cols-2 gap-4">
           <Button className="rounded-full " color="teal" type="submit">
-            Update Account
+            Update Shipment
           </Button>
-          <Button className="rounded-full " color="red">
+          <Button className="rounded-full " color="red" onClick={close}>
             Cancel
           </Button>
         </div>
