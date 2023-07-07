@@ -1,3 +1,4 @@
+import { Button } from "@mantine/core";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type PropsWithChildren } from "react";
@@ -29,8 +30,19 @@ export function NavbarItem({ to, name }: NavbarItemProps) {
 
 export function Navbar({ children }: PropsWithChildren) {
   return (
-    <nav className="fixed left-0 top-0 z-50 flex h-20 w-full items-center justify-center gap-5 bg-white">
-      {children}
+    <nav className="fixed left-0 top-0 z-50 flex h-20 w-full items-center  gap-5 bg-white px-10">
+      <div className="flex w-1/4 items-end text-4xl font-bold">
+        <div>FLEET</div>
+        <div className="text-2xl font-thin">corp</div>
+      </div>
+      <div className="flex w-1/2 items-center justify-center gap-5">
+        {children}
+      </div>
+      <div className="flex w-1/4 justify-end">
+        <Link href={"/dashboard/employee"}>
+          <Button>Log In</Button>
+        </Link>
+      </div>
     </nav>
   );
 }
