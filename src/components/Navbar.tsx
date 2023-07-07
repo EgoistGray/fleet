@@ -40,7 +40,14 @@ export function Navbar({ children }: PropsWithChildren) {
       </div>
       <div className="flex w-1/4 justify-end">
         <Link href={"/dashboard/employee"}>
-          <Button>Log In</Button>
+          <Button
+            color="teal"
+            variant="outline"
+            size="lg"
+            className="rounded-full"
+          >
+            Log In
+          </Button>
         </Link>
       </div>
     </nav>
