@@ -17,8 +17,8 @@ export default function Card({ name, description, imageUrl }: CardProps) {
             layout="fill"
           />
         </div>
-        <h1>{name}</h1>
-        <h2 className="font-normal">{description}</h2>
+        <h1 className="leading-10">{name}</h1>
+        <h2 className="font-normal leading-10">{description}</h2>
       </div>
     </div>
   );

@@ -13,30 +13,37 @@ export default function AboutSection() {
           className="relative rounded-full text-center text-5xl font-thin
             uppercase text-neutral-600 before:absolute before:-bottom-10 "
         >
-          The world&apos;s most extendable logistics management web application
+          The fastest-growing decentralized logistics and transportation
+          services
         </h2>
         <div className="mx-auto  my-12 h-2 w-12 rounded-full bg-black" />
         <p className=" text-4xl leading-10 text-neutral-800">
-          Fleet is our attempt of bringing complex logistics management tools
-          into the <span className="font-bold">open-source market.</span> <br />{" "}
-          <br />
-          It is built by using popular open-source web application framework,
-          such as NextJS, Prisma, TailwindCSS, and NextAuth to enable any of our
-          client to{" "}
+          Fleet&apos;s team consists of world-class engineers and managers with
+          over 30-years of experience in the field. We are committed into
+          creating a{" "}
           <span className="font-bold">
-            {" "}
-            easily extend and modify our product.
+            better, smarter and faster delivery services&nbsp;
+          </span>
+          compared to what conventional company could offer. <br /> <br />
+          During our time in the industry, we recognized that logistics services
+          are hard and expensive to operate. Delivery can take days or even
+          months to operate due to{" "}
+          <span className="font-bold">
+            insufficient sorting center and warehouses.
           </span>
           <br />
           <br />
-          Like the Blender Foundation, we are committed to turning Fleet into an{" "}
+          With Fleet, we introduced a system where anyone who has been validated
+          can contribute to our ever increasing{" "}
+          <span className="italic"> ghost warehouses and sorting center,</span>
+          &nbsp;
           <span className="font-bold">
-            industry standard tool accessible by anyone.
+            reducing our overall delivery time and cost.
           </span>
         </p>
         <Link
           href={"/about"}
-          className="my-5 flex cursor-pointer items-center  gap-3 py-3  text-4xl uppercase text-neutral-900 no-underline transition duration-100 hover:opacity-50"
+          className="my-5 flex w-fit cursor-pointer items-center  gap-3 py-3  text-4xl uppercase text-neutral-900 no-underline transition duration-100 hover:opacity-50"
         >
           Learn More <AiOutlineRight />
         </Link>

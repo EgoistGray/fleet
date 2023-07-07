@@ -5,7 +5,7 @@ import { useRef } from "react";
 function computeOpacity(sectionNumber: number, progress: number) {
   const TOTAL_SECTION = 3;
 
-  progress += 0.2; // some approximately accurate offset
+  progress += 0.1; // some approximately accurate offset
   const sectionProgress = progress * TOTAL_SECTION - sectionNumber;
 
   if (sectionProgress >= 0 && sectionProgress < 1) return 1;
@@ -31,8 +31,7 @@ export default function PromotionSection() {
             opacity: computeOpacity(0, scrollYProgress),
           }}
         >
-          Our team comprises of industry experts with over 30-years of
-          experience.
+          We&apos;re currently rated the fastest shipping company in the world
         </motion.div>
         <motion.div
           className={skillTransitionClass}
@@ -40,8 +39,9 @@ export default function PromotionSection() {
             opacity: computeOpacity(1, scrollYProgress),
           }}
         >
-          Fleet is designed carefully based of our issues and problems with
-          current solutions.
+          We have validated more than 2,000{" "}
+          <span className="italic">ghost warehouses and sorting center</span>{" "}
+          with strict standard and guidelines
         </motion.div>
         <motion.div
           className={skillTransitionClass}
@@ -49,8 +49,8 @@ export default function PromotionSection() {
             opacity: computeOpacity(2, scrollYProgress),
           }}
         >
-          We know our tools inside and out and are committed into bringing them
-          for everyone to use.
+          In total, our Fleet network has delivered over 100,000 parcels
+          worldwide
         </motion.div>
       </div>
     </div>

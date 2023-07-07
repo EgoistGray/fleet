@@ -1,4 +1,3 @@
-import { Button } from "@mantine/core";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { useRef } from "react";
@@ -27,7 +26,7 @@ export default function Hero() {
       </div>
       <div className="fixed -z-10 aspect-square h-full w-full overflow-hidden  bg-white/70 backdrop-blur-md"></div>
       <motion.div
-        className="mx-auto mt-10 flex h-full min-h-screen w-full max-w-2xl flex-col items-center justify-center"
+        className="mx-auto flex h-full min-h-screen w-full max-w-2xl flex-col items-center justify-center"
         style={{
           translateY: parallaxY,
         }}
@@ -37,17 +36,13 @@ export default function Hero() {
           Ship it <span className="underline">Right</span>.
         </div>
         <div className="mt-5 text-center text-4xl font-light">
-          Manage your fleet with our highly extendable, simple, and smart system
+          Manage your parcels with our highly scalable, simple, and smart system
         </div>
-        <Link href={"/auth/register"}>
-          <Button
-            size="xl"
-            className="mt-7 rounded-full"
-            variant="outline"
-            rightIcon={<AiOutlineRight />}
-          >
-            Join Today
-          </Button>
+        <Link href={"/services"} className="mt-10 no-underline">
+          <div className="flex items-center justify-center gap-3 border-2 border-solid border-black px-6 py-3 text-2xl text-black transition duration-100 hover:bg-black/10">
+            <div>Learn More</div>
+            <AiOutlineRight />
+          </div>
         </Link>
       </motion.div>
     </div>

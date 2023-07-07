@@ -23,46 +23,44 @@ export default function Services() {
             <h1 className="text-center text-6xl">Our Services</h1>
             <Divider />
             <div className="text-3xl">
-              Although Fleet is an open-sourced product, we understand that some
-              clients are not willing to{" "}
+              At Fleet, we understand the importance of efficient logistics
+              solutions in driving your business forward. With our commitment to
+              simplifying and streamlining the complexities of supply chain
+              management, we offer a range of comprehensive services tailored to
+              meet your unique needs.
+              <br />
+              <br />
+              Our minimalist approach ensures that your logistics experience is
+              seamless,&nbsp;
               <span className="font-bold">
-                customize, maintain, or further developer Fleet
+                allowing you to focus on what matters most - growing your
+                business.&nbsp;
               </span>
-              . Hiring developers and managing a software is a cumbersome and
-              tedious experience.
-              <br />
-              <br />
-              Because of that, you may contact at{" "}
-              <span className="text-blue-500">services@fleetcorp.io</span> if
-              you ever need out services such as:
+              Discover our services below and let Fleet be your trusted
+              logistics partner:
             </div>
 
             {/* Grid card i guess */}
             <div className="mt-20 grid grid-cols-2 gap-4">
               <Card
-                name="Integration"
-                imageUrl="/images/integration.jpg"
-                description="We offer our services to help you integrate our core technology into your company culture. It is also possible for us to produce an instructional video for your employee to learn and follow (with some agreements)."
+                name="Transportation Services"
+                imageUrl="/images/transportation.jpg"
+                description="Simplify your shipping needs with our comprehensive transportation solutions. We offer Full Truckload (FTL) and Less than Truckload (LTL) shipments, expedited delivery options, inter-modal transportation, and specialized equipment for sensitive or oversized cargo."
               />
               <Card
-                name="Development"
-                imageUrl="/images/development.jpg"
-                description="Sometimes you need something else. We can dedicate a part of our team to fully help you develop a feature that you specifically need."
+                name="Warehousing and Distribution"
+                imageUrl="/images/warehouse.jpg"
+                description="Streamline your storage and distribution operations with our modern warehouse facilities. Benefit from our inventory management services, cross-docking capabilities, trans-loading solutions, and just-in-time (JIT) delivery options."
               />
               <Card
-                name="Deployment"
-                imageUrl="/images/deployment.jpg"
-                description="Deployment is expensive and tedious. Let us manage all the hustle for you while you sit back and simply use Fleet as your tool."
+                name="Supply Chain Management"
+                imageUrl="/images/supply-chain.jpg"
+                description="Optimize your supply chain with our end-to-end solutions. We provide demand forecasting, inventory planning, vendor management, procurement support, and efficient handling of reverse logistics and returns management."
               />
               <Card
-                name="Maintenance"
-                imageUrl="/images/maintenance.jpeg"
-                description="We fully commit into responding to our community and our foremost clients. Any issues reported to us will be dealt swiftly"
-              />
-              <Card
-                name="World-class Customer Support"
-                imageUrl="/images/customer-support.jpg"
-                description="If any of your staff encountered issue, you can simply redirect their complaints to us. No other departments required."
+                name="Customs Clearance and Trade Compliance"
+                imageUrl="/images/clearance.jpg"
+                description="Navigate customs regulations effortlessly with our expert assistance. We handle import/export documentation, duty and tax management, and ensure compliance with international trade laws."
               />
             </div>
           </SectionContent>

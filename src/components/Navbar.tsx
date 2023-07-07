@@ -1,4 +1,3 @@
-import { Button } from "@mantine/core";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -48,8 +47,18 @@ export function Navbar({ children }: PropsWithChildren) {
       <div className="flex w-1/2 items-center justify-center gap-5">
         {children}
       </div>
-      <div className="flex w-1/4 justify-end">
-        <Link href={"/dashboard/employee"}>
+      <div className="flex w-1/4 justify-end gap-1">
+        <Link href={"/auth/login"} className="no-underline">
+          <div className="flex items-center justify-center gap-3 rounded-full bg-black px-6 py-2 text-lg font-bold text-white transition duration-100 hover:bg-black/60">
+            <div>Login</div>
+          </div>
+        </Link>
+        <Link href={"/auth/register"} className="no-underline">
+          <div className="flex items-center justify-center gap-3 rounded-full px-6 py-2 text-lg font-bold text-black transition duration-100 hover:text-neutral-500">
+            <div>Register</div>
+          </div>
+        </Link>
+        {/* <Link href={"/dashboard/employee"}>
           <Button
             color="teal"
             variant="outline"
@@ -58,7 +67,7 @@ export function Navbar({ children }: PropsWithChildren) {
           >
             Log In
           </Button>
-        </Link>
+        </Link> */}
       </div>
     </motion.nav>
   );

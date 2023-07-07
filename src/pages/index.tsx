@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Fleet | Opensource Logistics Management Tool</title>
+        <title>Fleet | Logistics Company </title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar>

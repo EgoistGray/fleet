@@ -6,8 +6,15 @@ import Section, { SectionContent } from "@/components/Section";
 import Head from "next/head";
 import { type PropsWithChildren } from "react";
 
-function Text({ children }: PropsWithChildren) {
-  return <div className="mb-12 w-full text-3xl leading-10">{children}</div>;
+function Text({
+  children,
+  className = "",
+}: { className?: string } & PropsWithChildren) {
+  return (
+    <div className={`mb-12 w-full text-3xl leading-10 ${className}`}>
+      {children}
+    </div>
+  );
 }
 
 function ArticleImage({ imageUrl }: { imageUrl: string }) {
@@ -55,109 +62,96 @@ export default function About() {
             Our Story. Our Perspective.
           </h1>
           <h2 className="text-3xl font-thin tracking-tight">
-            The story of how everyone here concludes that current logistics
+            the story of how our founders conclude that current logistics
             solution sucks.
           </h2>
           <Divider />
         </div>
         <Section>
           <SectionContent>
-            <ArticleImage imageUrl="/images/logistics.jpg" />
+            <ArticleImage imageUrl="/images/traditional.jpg" />
             <Text>
-              Once upon a time, our team of passionate individuals came together
-              with a common frustration:{" "}
+              Our story begins with a simple realization:{" "}
               <span className="font-bold">
-                the archaic and cumbersome nature of traditional logistics
-                management solutions.
+                traditional logistics solutions are often sluggish, rigid, and
+                fail to adapt to the ever-changing demands of today&apos;s
+                fast-paced world.{" "}
               </span>{" "}
-              We were tired of witnessing the inefficiencies, the lack of
-              transparency, and the countless hours wasted on manual processes.{" "}
-              <span className="font-bold underline">
-                We knew there had to be a better way.
+              As a team of passionate innovators, we grew tired of the
+              limitations imposed by the status quo and set out on a mission to
+              revolutionize the way goods are transported and stored.
+            </Text>
+            <Text>
+              Drawing inspiration from the power of decentralization, we
+              envisioned a logistics ecosystem where individuals and businesses
+              could seamlessly participate as &quot;ghost warehouses and sorting
+              centers.&quot; We wanted to harness the untapped potential of idle
+              spaces, spare capacity, and underutilized resources to create
+              an&nbsp;
+              <span className="font-bold">
+                agile and efficient network that could keep pace with the
+                dynamic needs of modern commerce.
+              </span>
+            </Text>
+            <Text className="italic">Thus, Fleet was born.</Text>
+            <Divider />
+
+            <ArticleImage imageUrl="/images/warehouse.jpg" />
+            <Text>
+              At Fleet, we believe that the future of logistics lies in
+              empowering individuals and businesses to become an integral part
+              of the supply chain. By leveraging our innovative platform,{" "}
+              <span className="font-bold">
+                anyone with available space can transform their idle assets into
+                valuable logistics hubs.
+              </span>{" "}
+              These &quot;ghost warehouses and sorting centers&quot; can
+              seamlessly integrate into our network,&nbsp;
+              <span className="italic">
+                contributing to the seamless movement of goods while earning
+                income from their underutilized resources.
               </span>
             </Text>
             <Text>
-              As we delved deeper into the world of logistics, we discovered
-              that businesses of all sizes were grappling with similar
-              challenges. The existing software solutions were often{" "}
-              <span className="font-bold">
-                expensive, complex, and inflexible,
-              </span>{" "}
-              making it difficult for small and medium-sized enterprises to
-              streamline their operations effectively. This realization ignited
-              our desire to create a revolutionary platform that would transform
-              the way logistics is managed.
+              But Fleet is more than just a platform -{" "}
+              <span className="font-bold">it&apos;s a community.</span> We
+              foster a collaborative environment where our members can connect,
+              share insights, and work together to optimize the efficiency of
+              our logistics network. Through a blend of cutting-edge technology,
+              real-time data analysis, and smart algorithms, we ensure that
+              every movement within the&nbsp;
+              <span className="font-bold italic">
+                Fleet ecosystem is streamlined, cost-effective, and sustainable.
+              </span>
             </Text>
             <Divider />
 
-            <ArticleImage imageUrl="/images/idea.jpg" />
+            <ArticleImage imageUrl="/images/sustainability.jpg" />
             <Text>
-              That&apos;s how Fleet was born - an open-sourced web-app based
-              logistics management solution. Our primary goal was to empower
-              businesses with a user-friendly, cost-effective, and scalable tool
-              that would optimize their logistics operations.{" "}
+              Our commitment to excellence extends beyond efficiency.{" "}
               <span className="font-bold">
-                We envisioned a platform that would be accessible to all,
-                regardless of the size of their fleet or budget.
-              </span>
+                We place a strong emphasis on sustainability, striving to reduce
+                the carbon footprint of logistics operations.
+              </span>{" "}
+              By optimizing routes, consolidating shipments, and utilizing
+              shared resources, we minimize waste and promote environmentally
+              friendly practices. At Fleet, we believe that responsible
+              logistics is an essential pillar of a better future for both
+              businesses and our planet.
             </Text>
             <Text>
-              Through our open-source approach, we aimed to foster a
-              collaborative community where logistics professionals, developers,
-              and businesses could contribute, innovate, and customize the
-              software to meet their specific needs. We believed that by
-              harnessing the collective wisdom and expertise of the community,
-              we could create{" "}
-              <span className="font-bold">
-                a comprehensive and adaptable solution that would benefit
-                everyone involved in the logistics ecosystem.
-              </span>
+              Join us on this exciting journey as we reshape the world of
+              logistics and transportation. Whether you&apos;re a business
+              looking for efficient and cost-effective solutions or an
+              individual seeking to contribute your space and resources, Fleet
+              welcomes you with open arms.
             </Text>
-            <Text>
-              With &quot;Fleet,&quot; we set out to tackle the pain points we
-              had witnessed firsthand. We designed intuitive dashboards that
-              provided real-time visibility into the entire logistics process -
-              from order management and dispatching to tracking and delivery.
-              Automation became the cornerstone of our solution, enabling
-              businesses to automate repetitive tasks, reduce errors, and save
-              valuable time.
-            </Text>
-            <Text>
-              Transparency and communication were paramount to us. We
-              incorporated features that allowed seamless collaboration between
-              drivers, dispatchers, and customers, ensuring everyone was on the
-              same page throughout the journey. Advanced analytics and reporting
-              capabilities provided valuable insights into performance metrics,
-              helping businesses make data-driven decisions to optimize their
-              operations further.
-            </Text>
-            <Divider />
 
             <Text>
-              <span className="font-bold">
-                But what truly set us apart was our commitment to being
-                open-sourced.
-              </span>{" "}
-              We believed that the collective intelligence of the community
-              could drive continuous innovation, allowing &quot;Fleet&quot; to
-              evolve and adapt to the ever-changing demands of the logistics
-              industry. By sharing our source code, we fostered an environment
-              of collaboration, where developers could contribute their
-              expertise, suggest improvements, and build upon the foundation we
-              had laid.
-            </Text>
-            <Text>
-              We knew that the journey ahead wouldn&apos;t be easy. However,
-              armed with a deep passion for revolutionizing the logistics
-              industry and a steadfast belief in the power of collaboration, we
-              embarked on this ambitious endeavor. With &quot;Fleet,&quot; we
-              aimed to empower businesses, simplify logistics management, and
-              contribute to a more efficient and sustainable future.
-            </Text>
-            <Text>
-              And so, our story continues as we work hand in hand with our
-              community, striving to shape the future of logistics through
-              innovation, openness, and a relentless pursuit of excellence.
+              Together, let&apos;s unlock the true potential of decentralized
+              logistics, embrace the power of collaboration, and pave the way
+              for a faster, greener, and more inclusive future. Welcome to
+              Fleet, where logistics meets innovation!
             </Text>
           </SectionContent>
         </Section>
