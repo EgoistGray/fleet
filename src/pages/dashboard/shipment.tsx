@@ -25,6 +25,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useState, type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 import {
@@ -133,6 +134,10 @@ export default function Employee() {
   };
   return (
     <>
+      <Head>
+        <title>Dashboard | Shipment</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Portal>
         {/* We want it to be outside the dom */}
         <CreateShipmentModal

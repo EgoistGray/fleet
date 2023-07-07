@@ -93,6 +93,7 @@ export default function CreateFormModal({
         />
         <PasswordInput
           label="Password"
+          placeholder="Please enter a password..."
           {...register("password", { required: "Please enter a password" })}
           error={errors.password?.message}
         />

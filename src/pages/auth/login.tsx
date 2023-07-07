@@ -2,6 +2,7 @@ import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { sha256 } from "js-sha256";
 import { type GetServerSideProps } from "next";
 import { getSession, signIn, useSession } from "next-auth/react";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -49,48 +50,54 @@ export default function Login() {
   };
 
   return (
-    <div className="grid h-full min-h-screen w-full place-items-center">
-      <div className="w-full max-w-lg rounded-3xl border border-white/25 px-14 py-20">
-        <div className="mb-4 flex w-full flex-col items-center">
-          <div className="mx-auto mb-3 text-4xl font-bold">
-            Welcome to Fleet!
+    <>
+      <Head>
+        <title>Fleet | Login </title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className="grid h-full min-h-screen w-full place-items-center">
+        <div className="w-full max-w-lg rounded-3xl border border-white/25 px-14 py-20">
+          <div className="mb-4 flex w-full flex-col items-center">
+            <div className="mx-auto mb-3 text-4xl font-bold">
+              Welcome to Fleet!
+            </div>
+            <div className="mx-auto mb-3 text-xl font-light">
+              Please login to continue to dashboard
+            </div>
           </div>
-          <div className="mx-auto mb-3 text-xl font-light">
-            Please login to continue to dashboard
-          </div>
+          <form
+            className="flex flex-col gap-2"
+            method="POST"
+            onSubmit={(e) => {
+              void handleSubmit(onSubmit)(e);
+            }}
+          >
+            <TextInput
+              placeholder="Username"
+              label="Username"
+              {...register("username", { required: "Please enter username" })}
+              error={errors.username?.message}
+            />
+            <PasswordInput
+              placeholder="Password"
+              label="Password"
+              {...register("password", { required: "Please enter username" })}
+              error={errors.password?.message}
+            />
+            <div className="mt-10 grid grid-cols-2 items-center">
+              <Link
+                href={"/auth/register"}
+                className="leading-3 text-[#1c7ed6] no-underline hover:underline"
+              >
+                Don&apos;t have an account?
+              </Link>
+              <Button type="submit" className="rounded-full" color="cyan">
+                Login
+              </Button>
+            </div>
+          </form>
         </div>
-        <form
-          className="flex flex-col gap-2"
-          method="POST"
-          onSubmit={(e) => {
-            void handleSubmit(onSubmit)(e);
-          }}
-        >
-          <TextInput
-            placeholder="Username"
-            label="Username"
-            {...register("username", { required: "Please enter username" })}
-            error={errors.username?.message}
-          />
-          <PasswordInput
-            placeholder="Password"
-            label="Password"
-            {...register("password", { required: "Please enter username" })}
-            error={errors.password?.message}
-          />
-          <div className="mt-10 grid grid-cols-2 items-center">
-            <Link
-              href={"/register"}
-              className="leading-3 text-[#1c7ed6] no-underline hover:underline"
-            >
-              Don&apos;t have an account?
-            </Link>
-            <Button type="submit" className="rounded-full" color="cyan">
-              Login
-            </Button>
-          </div>
-        </form>
       </div>
-    </div>
+    </>
   );
 }

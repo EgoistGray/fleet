@@ -25,8 +25,8 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { type GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
+import Head from "next/head";
 import { useState, type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 import {
@@ -106,6 +106,10 @@ export default function Employee() {
 
   return (
     <>
+      <Head>
+        <title>Dashboard| Employee</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Portal>
         {/* We want it to be outside the dom */}
         <CreateAccountModal
@@ -276,7 +280,7 @@ function createTableFromUser(
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, {});
+  const session = await getSession(context);
 
   if (session?.user.role !== "owner")
     return {

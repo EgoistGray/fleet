@@ -14,7 +14,7 @@ export default function TryTodaySection() {
           this rising software.
         </div>
         <Link
-          href={"/dashboard/employee"}
+          href={"/auth/register"}
           className=" my-5 flex cursor-pointer items-center gap-3  py-3 text-4xl  uppercase  text-white no-underline transition duration-100 hover:opacity-50"
         >
           Sign up

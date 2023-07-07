@@ -68,6 +68,7 @@ export default function CreateFormModal({
           <TextInput
             label="Weight (kg)"
             placeholder="10"
+            type="number"
             {...register("weight", {
               required: "Please specify the weight",
               valueAsNumber: true,
@@ -121,7 +122,6 @@ export default function CreateFormModal({
             { label: "Processing", value: "processing" },
             { label: "Shipping", value: "shipping" },
             { label: "Delivered", value: "delivered" },
-            { label: "Error", value: "error" },
           ]}
           defaultValue={"pending"}
         />

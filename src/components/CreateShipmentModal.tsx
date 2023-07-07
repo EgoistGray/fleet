@@ -18,7 +18,7 @@ export default function CreateFormModal({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateShipment>();
+  } = useForm<CreateShipment>({});
 
   const utils = api.useContext();
   const createShipment = api.shipments.createShipment.useMutation({
@@ -62,6 +62,7 @@ export default function CreateFormModal({
           <TextInput
             label="Weight (kg)"
             placeholder="10"
+            type="number" // to persist the style
             {...register("weight", {
               required: "Please specify the weight",
               valueAsNumber: true,

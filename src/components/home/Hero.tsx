@@ -1,5 +1,6 @@
 import { Button } from "@mantine/core";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Link from "next/link";
 import { useRef } from "react";
 import { AiOutlineRight } from "react-icons/ai";
 
@@ -38,14 +39,16 @@ export default function Hero() {
         <div className="mt-5 text-center text-4xl font-light">
           Manage your fleet with our highly extendable, simple, and smart system
         </div>
-        <Button
-          size="xl"
-          className="mt-7 rounded-full"
-          variant="outline"
-          rightIcon={<AiOutlineRight />}
-        >
-          Join Today
-        </Button>
+        <Link href={"/auth/register"}>
+          <Button
+            size="xl"
+            className="mt-7 rounded-full"
+            variant="outline"
+            rightIcon={<AiOutlineRight />}
+          >
+            Join Today
+          </Button>
+        </Link>
       </motion.div>
     </div>
   );

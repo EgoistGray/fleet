@@ -109,6 +109,7 @@ export default function UpdateFormModal({
         />
         <PasswordInput
           label="Password"
+          placeholder="Please enter a password..."
           {...register("password", {
             required: "Please enter a new password",
           })}

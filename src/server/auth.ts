@@ -1,5 +1,4 @@
 import { prisma } from "@/server/db";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import type { DefaultUser } from "next-auth";
 import {
@@ -92,7 +91,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
   providers: [
     CredentialProvider({
       name: "Credentials",

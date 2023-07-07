@@ -16,36 +16,6 @@ datasource db {
     relationMode = "prisma"
 }
 
-// Necessary for Next auth
-model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@unique([provider, providerAccountId])
-    @@index([userId])
-}
-
-model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@index([userId])
-}
-
 model User {
     id        String @id @default(cuid())
     username  String @unique
@@ -54,11 +24,6 @@ model User {
     company   String
     password  String // sha-256?
     role      String
-
-    /// TODO: Might wanna use createdAt instead of id for the pagination
-    // createdAt DateTime;
-    Account Account[]
-    Session Session[]
 }
 
 model VerificationToken {
