@@ -27,7 +27,7 @@ export default function Hero() {
       </div>
       <div className="fixed -z-10 aspect-square h-full w-full overflow-hidden  bg-white/70 backdrop-blur-md"></div>
       <motion.div
-        className="mx-auto mt-10 flex h-full min-h-screen w-full max-w-2xl flex-col items-center justify-center"
+        className="mx-auto flex h-full min-h-screen w-full max-w-2xl flex-col items-center justify-center"
         style={{
           translateY: parallaxY,
         }}

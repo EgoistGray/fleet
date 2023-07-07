@@ -1,7 +1,7 @@
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { sha256 } from "js-sha256";
 import { type GetServerSideProps } from "next";
-import { getSession, signIn, useSession } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -34,7 +34,6 @@ export default function Login() {
   } = useForm<LoginType>();
 
   const router = useRouter();
-  const session = useSession();
 
   const onSubmit: SubmitHandler<LoginType> = async (credentials) => {
     const status = await signIn("credentials", {
@@ -44,7 +43,6 @@ export default function Login() {
     });
 
     // TODO: figure out why the session is not stored
-    console.log(session);
     if (status?.ok) await router.replace("/dashboard/employee");
     if (status?.error) toast.error("Wrong username or password");
   };
@@ -81,7 +79,7 @@ export default function Login() {
             <PasswordInput
               placeholder="Password"
               label="Password"
-              {...register("password", { required: "Please enter username" })}
+              {...register("password", { required: "Please enter a password" })}
               error={errors.password?.message}
             />
             <div className="mt-10 grid grid-cols-2 items-center">
