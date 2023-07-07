@@ -1,6 +1,5 @@
 import { type GetShipment, type UpdateShipment } from "@/common/types";
 import CreateShipmentModal from "@/components/CreateShipmentModal";
-import Dashboard from "@/components/Dashboard";
 import ShippingBadge from "@/components/ShippingBadge";
 import {
   Table,
@@ -12,6 +11,7 @@ import {
 } from "@/components/Table";
 import UpdateShipmentModal from "@/components/UpdateShipmentModal";
 import useDebounce from "@/hooks/useDebounce";
+import Dashboard from "@/layouts/Dashboard";
 import { api } from "@/utils/api";
 import {
   ActionIcon,

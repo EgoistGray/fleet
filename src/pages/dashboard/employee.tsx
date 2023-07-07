@@ -1,6 +1,5 @@
 import { type GetEmployee, type UpdateEmployeeAccount } from "@/common/types";
 import CreateAccountModal from "@/components/CreateAccountModal";
-import Dashboard from "@/components/Dashboard";
 import JobBadge from "@/components/JobBadge";
 import {
   Table,
@@ -12,6 +11,7 @@ import {
 } from "@/components/Table";
 import UpdateAccountModal from "@/components/UpdateAccountModal";
 import useDebounce from "@/hooks/useDebounce";
+import Dashboard from "@/layouts/Dashboard";
 import { api } from "@/utils/api";
 import {
   ActionIcon,

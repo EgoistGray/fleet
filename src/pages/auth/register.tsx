@@ -47,10 +47,6 @@ export default function Register() {
     formState: { errors },
   } = useForm<RegisterType & { reconfirmPassword: string }>();
   const onSubmit: SubmitHandler<RegisterType> = (info) => {
-    console.log({
-      ...info,
-      password: sha256.hex(info.password), //client-side hashing for secure transport
-    });
     mutate({
       ...info,
       password: sha256.hex(info.password), //client-side hashing for secure transport
