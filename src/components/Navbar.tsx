@@ -1,4 +1,5 @@
 import { Button } from "@mantine/core";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type PropsWithChildren } from "react";
@@ -29,8 +30,17 @@ export function NavbarItem({ to, name }: NavbarItemProps) {
 }
 
 export function Navbar({ children }: PropsWithChildren) {
+  const { scrollY } = useScroll();
+  const backgroundColor = useTransform(scrollY, (val) =>
+    val >= 50 ? "white" : ""
+  );
   return (
-    <nav className="fixed left-0 top-0 z-50 flex h-20 w-full items-center  gap-5 bg-white px-10">
+    <motion.nav
+      className={`fixed left-0 top-0 z-50 flex h-20 w-full items-center  gap-5  px-10 transition duration-300`}
+      style={{
+        backgroundColor,
+      }}
+    >
       <div className="flex w-1/4 items-end text-4xl font-bold">
         <div>FLEET</div>
         <div className="text-2xl font-thin">corp</div>
@@ -50,6 +60,6 @@ export function Navbar({ children }: PropsWithChildren) {
           </Button>
         </Link>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
